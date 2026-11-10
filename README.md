@@ -142,20 +142,20 @@ flowchart TB
 ## Technology Stack
 
 | Layer | Technologies |
-|---|---|
-| Backend | Python, FastAPI |
-| Frontend | React, TypeScript, Vite, Tailwind CSS |
-| SIEM | Wazuh Manager 4.9.0 |
-| Containerization | Docker, Docker Compose |
-| Honeypots | Custom Python SSH/Telnet, SMB/HTTP/FTP and MQTT emulators |
-| IoT Simulation | Python, MQTT |
-| Detection | Custom rules, Sigma-inspired rules, event correlation |
-| Threat Framework | MITRE ATT&CK |
-| Machine Learning | Scikit-learn, Isolation Forest |
-| Threat Intelligence | AbuseIPDB, VirusTotal |
-| Incident Response | Custom SOAR simulation |
-| Evidence Integrity | SHA-256 |
-| Testing | Pytest, custom integration and acceptance tests |
+| :--- | :--- |
+| **Backend** | Python, FastAPI |
+| **Frontend** | React, TypeScript, Vite, Tailwind CSS |
+| **SIEM** | Wazuh Manager 4.9.0 |
+| **Containerization** | Docker, Docker Compose |
+| **Honeypots** | Custom Python SSH/Telnet, SMB/HTTP/FTP and MQTT emulators |
+| **IoT Simulation** | Python, MQTT |
+| **Detection** | Custom rules, Sigma-inspired rules, event correlation |
+| **Threat Framework** | MITRE ATT&CK |
+| **Machine Learning** | Scikit-learn, Isolation Forest |
+| **Threat Intelligence** | AbuseIPDB, VirusTotal |
+| **Incident Response** | Custom SOAR simulation |
+| **Evidence Integrity** | SHA-256 |
+| **Testing** | Pytest, custom integration and acceptance tests |
 
 ---
 
@@ -219,6 +219,7 @@ The platform includes 15 dashboard views covering security monitoring, investiga
 
 ![System Health](docs/assets/screenshots/15-system-health.png)
 
+> [!NOTE]
 > The Live Security Events screenshot is intentionally excluded from this gallery pending review of repetitive low-severity events displayed in that view.
 
 ---
@@ -230,10 +231,10 @@ The platform includes 15 dashboard views covering security monitoring, investiga
 Three custom lightweight honeypot emulators provide decoy services.
 
 | Emulator | Protocols | Ports |
-|---|---|---|
-| SSH / Telnet Emulator | SSH, Telnet | 2222, 2223 |
-| SMB / HTTP / FTP Emulator | SMB, HTTP, FTP | 4445, 8081, 2121 |
-| MQTT Honeypot | MQTT | 18883 |
+| :--- | :--- | :--- |
+| **SSH / Telnet Emulator** | SSH, Telnet | 2222, 2223 |
+| **SMB / HTTP / FTP Emulator** | SMB, HTTP, FTP | 4445, 8081, 2121 |
+| **MQTT Honeypot** | MQTT | 18883 |
 
 **Capabilities:**
 - Capture authentication attempts.
@@ -249,19 +250,19 @@ Three custom lightweight honeypot emulators provide decoy services.
 The virtual fleet contains 10 software-based devices.
 
 | Device ID | Description |
-|---|---|
-| iot-cam-01 | IP Camera |
-| iot-router-01 | Smart Router |
-| iot-temp-01 | Temperature Sensor |
-| iot-motion-01 | Motion Sensor |
-| iot-light-01 | Smart Lighting Controller |
-| iot-gw-01 | Industrial Gateway |
-| iot-door-01 | Door Sensor |
-| iot-env-01 | Environmental Sensor |
-| iot-energy-01 | Smart Energy Meter |
-| iot-ctrl-01 | HVAC Controller |
+| :--- | :--- |
+| `iot-cam-01` | IP Camera |
+| `iot-router-01` | Smart Router |
+| `iot-temp-01` | Temperature Sensor |
+| `iot-motion-01` | Motion Sensor |
+| `iot-light-01` | Smart Lighting Controller |
+| `iot-gw-01` | Industrial Gateway |
+| `iot-door-01` | Door Sensor |
+| `iot-env-01` | Environmental Sensor |
+| `iot-energy-01` | Smart Energy Meter |
+| `iot-ctrl-01` | HVAC Controller |
 
-Controlled scenarios include:
+**Controlled scenarios include:**
 - MQTT publish burst flooding.
 - Actuator command override.
 - Temperature telemetry tampering.
@@ -272,7 +273,7 @@ These scenarios demonstrate how abnormal IoT behavior can be captured and analyz
 
 The platform integrates **Wazuh Manager 4.9.0** for centralized log processing.
 
-Implemented components include:
+**Implemented components include:**
 - Custom XML decoders.
 - Custom XML detection rules.
 - Alert ingestion from Wazuh alert files.
@@ -296,7 +297,6 @@ Risk assessment considers severity, event frequency, threat intelligence and ano
 ### 5. Threat Intelligence
 
 The platform includes integrations for:
-
 - **AbuseIPDB v2:** IP reputation and abuse confidence information.
 - **VirusTotal v3:** File hash reputation lookups.
 
@@ -306,7 +306,7 @@ Local caching helps reduce repeated external requests. API credentials must be c
 
 The ML component uses an unsupervised **Isolation Forest** model to identify potentially abnormal activity in behavioral telemetry.
 
-Implemented functionality includes:
+**Implemented functionality includes:**
 - Telemetry feature extraction.
 - Dataset generation.
 - Model training.
@@ -333,7 +333,7 @@ SOAR response is implemented in **simulation mode**. Containment actions are rec
 
 The platform uses SHA-256 hash chaining to support integrity verification of SOAR audit records.
 
-Additional functionality includes:
+**Additional functionality includes:**
 - Audit record hashing.
 - Previous-hash linkage.
 - Chain integrity verification.
@@ -359,7 +359,6 @@ This provides tamper-evident records for the audit chain. It is not equivalent t
 
 ```bash
 git clone https://github.com/chakradhar027/mini-soc-threat-detection-platform.git
-
 cd mini-soc-threat-detection-platform
 ```
 
@@ -367,7 +366,6 @@ cd mini-soc-threat-detection-platform
 
 ```bash
 python3 -m venv .venv
-
 source .venv/bin/activate
 ```
 
@@ -375,7 +373,6 @@ source .venv/bin/activate
 
 ```bash
 pip install --upgrade pip
-
 pip install -r backend/requirements.txt
 ```
 
@@ -439,9 +436,7 @@ Interactive API documentation, when enabled, is available at:
 
 **http://127.0.0.1:8000/docs**
 
-Full endpoint documentation:
-
-[API Documentation](docs/api-documentation.md)
+Full endpoint documentation: [API Documentation](docs/api-documentation.md)
 
 ---
 
@@ -476,7 +471,7 @@ mini-soc-threat-detection-platform/
 ## Development Phases
 
 | Phase | Description | Status |
-|---|---|---|
+| :---: | :--- | :---: |
 | 1 | Project Planning and Architecture | Completed |
 | 2 | Infrastructure and Honeypot Deployment | Completed |
 | 3 | IoT Device Simulation Fleet | Completed |
@@ -495,7 +490,7 @@ See [Phase Tracker](docs/phase-tracker.md) for the detailed development record.
 Additional project documentation is available in the `docs/` directory.
 
 | Document | Description |
-|---|---|
+| :--- | :--- |
 | [Architecture](docs/architecture.md) | System architecture and resource budgeting |
 | [Network Design](docs/network-design.md) | Network segmentation and port allocation |
 | [Technology Stack](docs/technology-stack.md) | Technology inventory |
@@ -546,23 +541,17 @@ Potential future improvements include:
 
 ## Project Information
 
-**Project:** Mini SOC & Threat Detection Platform
-
-**Category:** Cybersecurity | Security Operations | SIEM | IoT Security | Machine Learning
-
-**Repository:**  
-https://github.com/chakradhar027/mini-soc-threat-detection-platform
-
-**Platform:** Apple Silicon ARM64
-
-**Purpose:** Educational cybersecurity engineering project.
+- **Project:** Mini SOC & Threat Detection Platform
+- **Category:** Cybersecurity | Security Operations | SIEM | IoT Security | Machine Learning
+- **Repository:** https://github.com/chakradhar027/mini-soc-threat-detection-platform
+- **Platform:** Apple Silicon ARM64
+- **Purpose:** Educational cybersecurity engineering project.
 
 The project demonstrates the integration of security monitoring, event analysis, threat detection, incident response and evidence integrity in a resource-conscious local SOC environment.
 
 ---
 
 <p align="center">
-  <strong>MINI SOC & THREAT DETECTION PLATFORM</strong>
-  <br>
+  <strong>MINI SOC & THREAT DETECTION PLATFORM</strong><br>
   Security Monitoring • Threat Detection • Incident Investigation • Evidence Integrity
 </p>
