@@ -5,59 +5,59 @@
 </p>
 
 <p align="center">
-  **A Local Security Operations Center for Honeypot Monitoring, SIEM Detection, IoT Security, Threat Intelligence and Incident Response.**
+  <strong>A Local Security Operations Center for Honeypot Monitoring, SIEM Detection, IoT Security, Threat Intelligence and Incident Response.</strong>
 </p>
 
 <p align="center">
-  ![Platform](https://img.shields.io/badge/Platform-Apple%20Silicon%20ARM64-blue)
-  ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
-  ![SIEM](https://img.shields.io/badge/SIEM-Wazuh%204.9.0-00A98F)
-  ![Security](https://img.shields.io/badge/Security-Educational%20Prototype-orange)
-  ![Status](https://img.shields.io/badge/Project-Completed-success)
+  <img src="https://img.shields.io/badge/Platform-Apple%20Silicon%20ARM64-blue" alt="Platform">
+  <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python">
+  <img src="https://img.shields.io/badge/SIEM-Wazuh%204.9.0-00A98F" alt="Wazuh">
+  <img src="https://img.shields.io/badge/Type-Educational%20Prototype-orange" alt="Educational Prototype">
+  <img src="https://img.shields.io/badge/Project-Completed-success" alt="Project Completed">
 </p>
 
 ---
 
 ## Overview
 
-**Mini SOC & Threat Detection Platform** is an educational cybersecurity laboratory that simulates the core operations of a Security Operations Center (SOC).
+The **Mini SOC & Threat Detection Platform** is an educational cybersecurity laboratory designed to simulate the core operations of a Security Operations Center (SOC).
 
-The platform collects security events from custom honeypot emulators and simulated IoT devices, processes telemetry through a centralized detection pipeline, correlates suspicious activity, maps detected behaviors to the MITRE ATT&CK framework, and provides an analyst dashboard for investigation and response.
+The platform collects security events from custom honeypot emulators and simulated IoT devices, processes telemetry through a centralized detection pipeline, correlates suspicious activity, maps observed behaviors to the MITRE ATT&CK framework, and provides an analyst dashboard for investigation and response.
 
-It combines SIEM integration, custom detection rules, threat intelligence enrichment, machine learning-based anomaly detection, incident management, simulated SOAR response, and cryptographic evidence integrity verification.
+It brings together SIEM integration, custom detection rules, threat intelligence enrichment, machine learning-based anomaly detection, incident management, simulated SOAR response, and cryptographic evidence integrity verification.
 
-The project is designed to run locally on an Apple Silicon Mac with an 8 GB RAM resource budget.
+The system is designed for local operation on an Apple Silicon Mac with an 8 GB RAM resource budget.
 
-## Key Features
+### Key Features
 
-- **Multi-protocol Honeypots:** SSH, Telnet, SMB, HTTP, FTP and MQTT decoy services.
-- **Wazuh SIEM Integration:** Wazuh Manager 4.9.0 with custom decoders, rules, alert ingestion and REST API integration.
-- **Virtual IoT Fleet:** 10 simulated IoT devices generating telemetry and controlled attack scenarios.
-- **Custom Detection Engine:** Sigma-inspired detection rules, event normalization, correlation and risk scoring.
+- **Multi-Protocol Honeypots:** SSH, Telnet, SMB, HTTP, FTP and MQTT decoy services.
+- **Wazuh SIEM Integration:** Wazuh Manager 4.9.0 with custom decoders, rules and alert ingestion.
+- **Virtual IoT Fleet:** 10 simulated IoT devices generating security telemetry and controlled attack scenarios.
+- **Custom Detection Engine:** Event normalization, custom detection rules, correlation and risk scoring.
 - **MITRE ATT&CK Mapping:** Maps observed attack behaviors to relevant tactics and techniques.
 - **Threat Intelligence:** AbuseIPDB and VirusTotal integrations for indicator enrichment.
 - **Machine Learning:** Isolation Forest-based anomaly detection using behavioral telemetry features.
-- **Incident Investigation:** Incident workspace, evidence timelines, analyst notes and incident status management.
-- **SOAR Simulation:** Controlled containment simulation, allowlists, audit logging and rollback functionality.
+- **Incident Investigation:** Incident workspace, evidence timelines, analyst notes and status management.
+- **SOAR Simulation:** Simulated response actions, allowlists, audit logging and rollback functionality.
 - **Attack Analytics:** Source IP analysis, credential statistics and entity relationship visualization.
 - **Evidence Integrity:** SHA-256 hash chaining and evidence manifest generation.
-- **Forensic Reporting:** Generation of investigation reports from collected telemetry.
+- **Forensic Reporting:** Investigation reports generated from collected telemetry.
 
 ---
 
-## Architecture
+## System Architecture
 
 The platform follows a modular architecture connecting event collection, SIEM processing, threat detection, incident investigation and evidence preservation.
 
-### System Architecture Diagram
+### Architecture Diagram
 
 ```mermaid
 flowchart TB
     A["Attack Simulation & Security Events"]
 
     subgraph Collection["Event Collection Layer"]
-        B["Cowrie-like SSH / Telnet Emulator"]
-        C["Dionaea-like SMB / HTTP / FTP Emulator"]
+        B["SSH / Telnet Honeypot Emulator"]
+        C["SMB / HTTP / FTP Honeypot Emulator"]
         D["MQTT Honeypot"]
         E["10 Virtual IoT Devices"]
     end
@@ -81,7 +81,7 @@ flowchart TB
     subgraph Response["Incident Response Layer"]
         P["Incident Management"]
         Q["SOAR Simulation"]
-        R["Analyst Dashboard"]
+        R["SOC Dashboard"]
     end
 
     subgraph Evidence["Evidence & Reporting Layer"]
@@ -126,13 +126,13 @@ flowchart TB
 
 ### Event Processing Workflow
 
-1. Attack simulations generate controlled security activity.
+1. Controlled attack simulations generate security activity.
 2. Honeypots and virtual IoT devices capture interactions and telemetry.
 3. The FastAPI backend collects and normalizes events.
 4. Wazuh processes supported security logs using custom detection rules.
 5. Detection components correlate events and map behaviors to MITRE ATT&CK.
 6. Threat intelligence and anomaly detection provide additional context.
-7. Incidents are created for analyst investigation.
+7. Incidents are made available for analyst investigation.
 8. SOAR simulation records response actions.
 9. SHA-256 audit chaining supports evidence integrity verification.
 10. The dashboard presents security events, incidents, analytics and reports.
@@ -161,7 +161,7 @@ flowchart TB
 
 ## Dashboard Screenshots
 
-The platform provides 15 dashboard views for security monitoring, investigation and system diagnostics.
+The platform includes 15 dashboard views covering security monitoring, investigation, analytics and system diagnostics. The following gallery contains 14 selected screenshots.
 
 ### 1. SOC Overview
 
@@ -227,28 +227,28 @@ The platform provides 15 dashboard views for security monitoring, investigation 
 
 ### 1. Honeypot Monitoring
 
-Three custom lightweight honeypot emulators provide decoy services:
+Three custom lightweight honeypot emulators provide decoy services.
 
 | Emulator | Protocols | Ports |
 |---|---|---|
-| Cowrie-like emulator | SSH, Telnet | 2222, 2223 |
-| Dionaea-like emulator | SMB, HTTP, FTP | 4445, 8081, 2121 |
-| MQTT Honey | MQTT | 18883 |
+| SSH / Telnet Emulator | SSH, Telnet | 2222, 2223 |
+| SMB / HTTP / FTP Emulator | SMB, HTTP, FTP | 4445, 8081, 2121 |
+| MQTT Honeypot | MQTT | 18883 |
 
-Capabilities include:
-- Capture of authentication attempts.
-- Logging of shell interactions.
-- Recording suspicious requests and payload metadata.
-- MQTT wildcard subscription and unauthorized publish detection.
-- Event logging for downstream analysis.
+**Capabilities:**
+- Capture authentication attempts.
+- Log shell interactions.
+- Record suspicious requests and payload metadata.
+- Detect MQTT wildcard subscriptions and unauthorized publish activity.
+- Generate event logs for downstream analysis.
 
-**Note:** These are custom lightweight emulators, not complete deployments of the official Cowrie and Dionaea projects.
+**Implementation note:** These are custom lightweight emulators, not complete deployments of the official Cowrie and Dionaea projects.
 
 ### 2. IoT Device Simulation
 
-The virtual fleet contains 10 software-based devices:
+The virtual fleet contains 10 software-based devices.
 
-| Device | Description |
+| Device ID | Description |
 |---|---|
 | iot-cam-01 | IP Camera |
 | iot-router-01 | Smart Router |
@@ -270,7 +270,7 @@ These scenarios demonstrate how abnormal IoT behavior can be captured and analyz
 
 ### 3. Wazuh SIEM Integration
 
-The platform integrates Wazuh Manager 4.9.0 for centralized log processing.
+The platform integrates **Wazuh Manager 4.9.0** for centralized log processing.
 
 Implemented components include:
 - Custom XML decoders.
@@ -279,11 +279,11 @@ Implemented components include:
 - Authenticated Wazuh REST API integration.
 - Event forwarding to the FastAPI backend.
 
-**Resource optimization:** The Wazuh Indexer and Wazuh Dashboard are omitted from the local deployment to reduce memory consumption on the 8 GB workstation.
+**Resource optimization:** Wazuh Indexer and Wazuh Dashboard are omitted from the local deployment to reduce memory consumption on the 8 GB workstation.
 
 ### 4. Detection and Correlation Engine
 
-The detection engine processes security events using:
+The detection engine processes security events through:
 - Custom detection rules.
 - Sigma-inspired detection definitions.
 - Event normalization.
@@ -291,21 +291,20 @@ The detection engine processes security events using:
 - Risk scoring.
 - MITRE ATT&CK technique mapping.
 
-The risk assessment considers severity, event frequency, threat intelligence and anomaly signals.
+Risk assessment considers severity, event frequency, threat intelligence and anomaly signals.
 
 ### 5. Threat Intelligence
 
 The platform includes integrations for:
+
 - **AbuseIPDB v2:** IP reputation and abuse confidence information.
 - **VirusTotal v3:** File hash reputation lookups.
 
-Local caching is used to reduce repeated external requests. API credentials must be configured securely where required.
+Local caching helps reduce repeated external requests. API credentials must be configured securely where required.
 
 ### 6. Machine Learning Anomaly Detection
 
-The ML component uses an unsupervised Isolation Forest model.
-
-It evaluates behavioral telemetry features to identify potentially abnormal activity.
+The ML component uses an unsupervised **Isolation Forest** model to identify potentially abnormal activity in behavioral telemetry.
 
 Implemented functionality includes:
 - Telemetry feature extraction.
@@ -315,7 +314,7 @@ Implemented functionality includes:
 - Evaluation utilities.
 - Interactive anomaly prediction.
 
-Model evaluation metrics should be interpreted in the context of the generated dataset and validation methodology; they should not be treated as proof of real-world detection accuracy.
+Model evaluation metrics must be interpreted in the context of the generated dataset and validation methodology. They should not be treated as proof of real-world detection accuracy.
 
 ### 7. Incident Management and SOAR
 
@@ -332,7 +331,7 @@ SOAR response is implemented in **simulation mode**. Containment actions are rec
 
 ### 8. Cryptographic Evidence Integrity
 
-The platform uses SHA-256 hash chaining to support the integrity verification of SOAR audit records.
+The platform uses SHA-256 hash chaining to support integrity verification of SOAR audit records.
 
 Additional functionality includes:
 - Audit record hashing.
@@ -341,11 +340,11 @@ Additional functionality includes:
 - Evidence artifact hashing.
 - Evidence manifest generation.
 
-This provides tamper-evidence for the recorded audit chain; it is not equivalent to an independently trusted or immutable external blockchain.
+This provides tamper-evident records for the audit chain. It is not equivalent to an independently trusted or immutable external blockchain.
 
 ---
 
-## Quick Start
+## Installation and Quick Start
 
 ### Prerequisites
 
@@ -388,9 +387,9 @@ Review the example configuration:
 infrastructure/docker/.env.example
 ```
 
-Configure any required API credentials and optional integrations in your local environment.
+Configure the required local environment variables and any optional integration credentials according to the installation guide.
 
-Do not commit real API keys, passwords, tokens or secrets to GitHub.
+**Important:** Never commit real API keys, passwords, tokens or other secrets to GitHub.
 
 ### 5. Start the Platform
 
@@ -398,11 +397,11 @@ Do not commit real API keys, passwords, tokens or secrets to GitHub.
 ./scripts/start-all.sh
 ```
 
-The startup script manages the configured honeypot and application services.
+The startup script manages the configured application and honeypot services.
 
 ### 6. Open the Dashboard
 
-Visit:
+Once the application has started, visit:
 
 **http://127.0.0.1:8000**
 
@@ -420,19 +419,21 @@ This script executes controlled scenarios against the local honeypot and simulat
 python3 tests/run_all_tests.py
 ```
 
+The last recorded master test-suite result was **41 tests passed, 0 failures and 0 errors**.
+
 ### 9. Stop the Platform
 
 ```bash
 ./scripts/stop-all.sh
 ```
 
-Refer to the installation guide for environment-specific setup and troubleshooting.
+For environment-specific setup instructions and troubleshooting, refer to the [Installation Guide](docs/installation-guide.md).
 
 ---
 
 ## API Documentation
 
-The backend exposes REST endpoints for platform health, event ingestion, Wazuh integration, incident management, analytics, IoT devices, anomaly detection and evidence integrity.
+The FastAPI backend exposes REST endpoints for platform health, event ingestion, Wazuh integration, incident management, analytics, IoT devices, anomaly detection and evidence integrity.
 
 Interactive API documentation, when enabled, is available at:
 
@@ -440,92 +441,30 @@ Interactive API documentation, when enabled, is available at:
 
 Full endpoint documentation:
 
-[`docs/api-documentation.md`](docs/api-documentation.md)
+[API Documentation](docs/api-documentation.md)
 
 ---
 
 ## Project Structure
 
+The repository is organized into the following major components:
+
 ```text
 mini-soc-threat-detection-platform/
 │
-├── backend/
-│   ├── app/
-│   │   ├── integrations/
-│   │   ├── schemas/
-│   │   └── services/
-│   └── requirements.txt
-│
-├── frontend/
-│   ├── index.html
-│   ├── package.json
-│   └── src/
-│
-├── honeypots/
-│   ├── cowrie/
-│   ├── dionaea/
-│   └── mqtt/
-│
-├── iot-simulator/
-│   ├── config/
-│   ├── devices/
-│   ├── event_generator/
-│   └── mqtt_client/
-│
-├── detection-engine/
-│   ├── correlation/
-│   ├── risk-scoring/
-│   ├── sigma/
-│   └── mitre_mapping.py
-│
-├── threat-intelligence/
-│   ├── abuseipdb/
-│   ├── virustotal/
-│   └── enrichment.py
-│
-├── ml-engine/
-│   ├── dataset/
-│   ├── evaluation/
-│   ├── models/
-│   └── preprocessing/
-│
-├── soar/
-│   ├── alert_manager.py
-│   ├── audit_logger.py
-│   ├── incident_manager.py
-│   └── response_engine.py
-│
-├── infrastructure/
-│   ├── docker/
-│   └── wazuh/
-│
-├── scripts/
-│   ├── start-all.sh
-│   ├── start-app.sh
-│   ├── start-honeypots.sh
-│   ├── stop-all.sh
-│   └── simulate_attacks.py
-│
-├── tests/
-│
-├── reports/
-│
-├── docs/
-│   ├── assets/
-│   │   ├── banner.png
-│   │   ├── banner.svg
-│   │   ├── logo.png
-│   │   ├── logo.svg
-│   │   └── screenshots/
-│   ├── architecture.md
-│   ├── api-documentation.md
-│   ├── installation-guide.md
-│   ├── network-design.md
-│   ├── technology-stack.md
-│   ├── threat-model.md
-│   ├── testing-report.md
-│   ├── final-demo-guide.md
-│   └── final-project-report.md
+├── backend/                  # FastAPI backend and services
+├── frontend/                 # SOC dashboard frontend
+├── honeypots/                # Custom honeypot emulators
+├── iot-simulator/             # Virtual IoT device fleet
+├── detection-engine/         # Detection, correlation and risk scoring
+├── threat-intelligence/      # External threat intelligence integrations
+├── ml-engine/                # Machine learning and anomaly detection
+├── soar/                     # Incident management and response simulation
+├── infrastructure/           # Docker and Wazuh configuration
+├── scripts/                  # Startup, shutdown and simulation scripts
+├── tests/                    # Automated tests
+├── reports/                  # Report-generation utilities
+├── docs/                     # Technical documentation and screenshots
 │
 ├── docker-compose.yml
 ├── README.md
@@ -547,13 +486,13 @@ mini-soc-threat-detection-platform/
 | 7 | Machine Learning and SOC Dashboard | Completed |
 | 8 | Testing, Validation and Final Handover | Completed |
 
-See [`docs/phase-tracker.md`](docs/phase-tracker.md) for the detailed phase tracker.
+See [Phase Tracker](docs/phase-tracker.md) for the detailed development record.
 
 ---
 
-## Documentation
+## Technical Documentation
 
-The repository includes additional technical documentation:
+Additional project documentation is available in the `docs/` directory.
 
 | Document | Description |
 |---|---|
@@ -573,7 +512,7 @@ The repository includes additional technical documentation:
 
 ---
 
-## Security and Deployment Limitations
+## Security Considerations and Limitations
 
 This project is an **educational local cybersecurity prototype**, not a production SOC platform.
 
@@ -605,7 +544,7 @@ Potential future improvements include:
 
 ---
 
-## Author and Project
+## Project Information
 
 **Project:** Mini SOC & Threat Detection Platform
 
@@ -614,7 +553,11 @@ Potential future improvements include:
 **Repository:**  
 https://github.com/chakradhar027/mini-soc-threat-detection-platform
 
-**Built as an educational cybersecurity engineering project**, demonstrating the integration of security monitoring, event analysis, threat detection, incident response and evidence integrity.
+**Platform:** Apple Silicon ARM64
+
+**Purpose:** Educational cybersecurity engineering project.
+
+The project demonstrates the integration of security monitoring, event analysis, threat detection, incident response and evidence integrity in a resource-conscious local SOC environment.
 
 ---
 
