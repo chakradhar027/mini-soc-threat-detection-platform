@@ -1,0 +1,27 @@
+title: MQTT Wildcard Topic Reconnaissance and Sniffing
+id: sig-mini-soc-003
+status: production
+description: Identifies untrusted clients attempting to subscribe to root or multi-level wildcard topics (#) on the MQTT IoT broker to harvest sensitive telemetry.
+author: Mini SOC Detection Engineering Team
+date: 2026-11-08
+references:
+  - https://attack.mitre.org/techniques/T1046/
+tags:
+  - attack.discovery
+  - attack.t1046
+logsource:
+  category: iot
+  product: mosquitto
+detection:
+  selection:
+    event_type: wildcard_subscription
+    topics|contains: '#'
+  condition: selection
+fields:
+  - src_ip
+  - client_id
+  - topics
+falsepositives:
+  - Central bridge aggregators (whitelisted by IP)
+level: high
+

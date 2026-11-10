@@ -1,0 +1,64 @@
+<!--
+  Wazuh Custom Decoders for Honeynet Telemetry
+  Decodes Cowrie, Dionaea, and Mosquitto JSON logs
+-->
+
+<!-- Cowrie JSON Decoder -->
+<decoder name="cowrie-json">
+  <prematch>"eventid":"cowrie.|"eventid": "cowrie.</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>
+
+<decoder name="cowrie-fields">
+  <parent>cowrie-json</parent>
+  <regex offset="after_parent">"src_ip":\s*"(\d+.\d+.\d+.\d+)"|"src_ip": "(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="cowrie-fields">
+  <parent>cowrie-json</parent>
+  <regex offset="after_parent">"src_port":\s*(\d+)|"src_port": (\d+)</regex>
+  <order>srcport</order>
+</decoder>
+
+<decoder name="cowrie-fields">
+  <parent>cowrie-json</parent>
+  <regex offset="after_parent">"username":\s*"([^"]+)"|"username": "([^"]+)"</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- Dionaea Multi-Service Trap Decoder -->
+<decoder name="dionaea-json">
+  <prematch>"service":"smb"|"service":"http"|"service":"ftp"|"service":"tftp"|"service": "smb"|"service": "http"|"service": "ftp"|"service": "tftp"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>
+
+<decoder name="dionaea-fields">
+  <parent>dionaea-json</parent>
+  <regex offset="after_parent">"src_ip":\s*"(\d+.\d+.\d+.\d+)"|"src_ip": "(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="dionaea-fields">
+  <parent>dionaea-json</parent>
+  <regex offset="after_parent">"sha256":\s*"([a-fA-F0-9]{64})"|"sha256": "([a-fA-F0-9]{64})"</regex>
+  <order>extra_data</order>
+</decoder>
+
+<!-- Mosquitto MQTT Honeypot Decoder -->
+<decoder name="mqtt-honey-json">
+  <prematch>"event_type":"mqtt_|"event_type": "mqtt_|"source_service":"mqtt_honeypot"|"source_service": "mqtt_honeypot"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>
+
+<decoder name="mqtt-honey-fields">
+  <parent>mqtt-honey-json</parent>
+  <regex offset="after_parent">"src_ip":\s*"(\d+.\d+.\d+.\d+)"|"src_ip": "(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="mqtt-honey-fields">
+  <parent>mqtt-honey-json</parent>
+  <regex offset="after_parent">"topic":\s*"([^"]+)"|"topic": "([^"]+)"</regex>
+  <order>url</order>
+</decoder>

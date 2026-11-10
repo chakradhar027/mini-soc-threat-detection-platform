@@ -1,0 +1,105 @@
+services:
+  # =========================================================================
+  # WAZUH INDEXER (OpenSearch Distributed Store)
+  # =========================================================================
+  wazuh-indexer:
+    image: wazuh/wazuh-indexer:4.9.0
+    container_name: soc-wazuh-indexer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9200:9200"
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx1024m"
+      - "bootstrap.memory_lock=false"
+      - "discovery.type=single-node"
+      - "INDEXER_PASSWORD=${WAZUH_API_PASSWORD}"
+    volumes:
+      - ../../infrastructure/docker/volumes/wazuh/indexer/data:/var/lib/wazuh-indexer
+    networks:
+      soc-mgmt-net:
+        ipv4_address: 172.28.30.10
+    deploy:
+      resources:
+        limits:
+          cpus: '1.50'
+          memory: 1200M
+        reservations:
+          memory: 768M
+
+  # =========================================================================
+  # WAZUH MANAGER (Real-time Analysis, Decoders, Rules, Alert Engine)
+  # =========================================================================
+  wazuh-manager:
+    image: wazuh/wazuh-manager:4.9.0
+    container_name: soc-wazuh-manager
+    restart: unless-stopped
+    depends_on:
+      - wazuh-indexer
+    ports:
+      - "127.0.0.1:1514:1514/udp"
+      - "127.0.0.1:1515:1515"
+      - "127.0.0.1:514:514/udp"
+      - "127.0.0.1:55000:55000"
+    environment:
+      - INDEXER_URL=https://172.28.30.10:9200
+      - INDEXER_USER=admin
+      - INDEXER_PASSWORD=${WAZUH_API_PASSWORD}
+      - API_USERNAME=${WAZUH_API_USER:-wazuh-wui}
+      - API_PASSWORD=${WAZUH_API_PASSWORD}
+    volumes:
+      - ../../infrastructure/docker/volumes/wazuh/manager/etc:/var/ossec/etc
+      - ../../infrastructure/docker/volumes/wazuh/manager/logs:/var/ossec/logs
+      - ../../infrastructure/wazuh/decoders:/var/ossec/etc/decoders:ro
+      - ../../infrastructure/wazuh/rules:/var/ossec/etc/rules:ro
+      # Read-only ingestion mounts from Honeypot & IoT log persistence
+      - ../../infrastructure/docker/volumes/cowrie/log:/var/log/honeypots/cowrie:ro
+      - ../../infrastructure/docker/volumes/dionaea/log:/var/log/honeypots/dionaea:ro
+      - ../../infrastructure/docker/volumes/mosquitto/log:/var/log/honeypots/mosquitto:ro
+    networks:
+      soc-mgmt-net:
+        ipv4_address: 172.28.30.20
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 800M
+        reservations:
+          memory: 512M
+
+  # =========================================================================
+  # WAZUH DASHBOARD (Web Visualization UI)
+  # =========================================================================
+  wazuh-dashboard:
+    image: wazuh/wazuh-dashboard:4.9.0
+    container_name: soc-wazuh-dashboard
+    restart: unless-stopped
+    depends_on:
+      - wazuh-indexer
+    ports:
+      - "127.0.0.1:8443:5601"
+    environment:
+      - INDEXER_URL=https://172.28.30.10:9200
+      - INDEXER_USER=admin
+      - INDEXER_PASSWORD=${WAZUH_API_PASSWORD}
+      - WAZUH_API_URL=https://172.28.30.20:55000
+    networks:
+      soc-mgmt-net:
+        ipv4_address: 172.28.30.30
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          memory: 256M
+
+networks:
+  soc-mgmt-net:
+    name: soc-mgmt-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.30.0/24
+          gateway: 172.28.30.1
+

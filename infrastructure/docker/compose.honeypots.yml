@@ -1,0 +1,109 @@
+services:
+  # =========================================================================
+  # COWRIE SSH / TELNET HONEYPOT
+  # =========================================================================
+  cowrie:
+    image: cowrie/cowrie:latest
+    container_name: soc-cowrie-honeypot
+    restart: unless-stopped
+    networks:
+      soc-honeynet:
+        ipv4_address: 172.28.10.10
+    ports:
+      - "${COWRIE_SSH_PORT:-2222}:2222"
+      - "${COWRIE_TELNET_PORT:-2223}:2223"
+    volumes:
+      - ../../infrastructure/docker/volumes/cowrie/log:/cowrie/cowrie-git/var/log/cowrie
+      - ../../infrastructure/docker/volumes/cowrie/tty:/cowrie/cowrie-git/var/lib/cowrie/tty
+      - ../../infrastructure/docker/volumes/cowrie/downloads:/cowrie/cowrie-git/var/lib/cowrie/downloads
+      - ../../honeypots/cowrie/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
+    environment:
+      - COWRIE_TELNET_ENABLED=yes
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 2222 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  # =========================================================================
+  # DIONAEA MULTI-SERVICE MALWARE TRAP (SMB, HTTP, FTP, TFTP)
+  # =========================================================================
+  dionaea:
+    build:
+      context: ../../honeypots/dionaea
+      dockerfile: Dockerfile
+    image: mini-soc/dionaea:arm64
+    container_name: soc-dionaea-honeypot
+    restart: unless-stopped
+    networks:
+      soc-honeynet:
+        ipv4_address: 172.28.10.20
+    ports:
+      - "${DIONAEA_SMB_PORT:-4445}:445"
+      - "${DIONAEA_HTTP_PORT:-8081}:80"
+      - "${DIONAEA_FTP_PORT:-2121}:21"
+    volumes:
+      - ../../infrastructure/docker/volumes/dionaea/log:/opt/dionaea/var/log
+      - ../../infrastructure/docker/volumes/dionaea/binaries:/opt/dionaea/var/dionaea/binaries
+      - ../../honeypots/dionaea/dionaea.cfg:/opt/dionaea/etc/dionaea/dionaea.cfg:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 80 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  # =========================================================================
+  # MOSQUITTO MQTT HONEYPOT BROKER
+  # =========================================================================
+  mosquitto-honey:
+    image: eclipse-mosquitto:2.0-alpine
+    container_name: soc-mqtt-honeypot
+    restart: unless-stopped
+    networks:
+      soc-honeynet:
+        ipv4_address: 172.28.10.30
+    ports:
+      - "${MOSQUITTO_HONEY_PORT:-18883}:1883"
+    volumes:
+      - ../../honeypots/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ../../infrastructure/docker/volumes/mosquitto/log:/mosquitto/log
+      - ../../infrastructure/docker/volumes/mosquitto/data:/mosquitto/data
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 1883 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          memory: 64M
+
+networks:
+  soc-honeynet:
+    name: soc-honeynet
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.10.0/24
+          gateway: 172.28.10.1
+

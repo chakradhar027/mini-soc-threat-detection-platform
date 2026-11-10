@@ -1,0 +1,51 @@
+services:
+  # =========================================================================
+  # WAZUH MANAGER (Resource-Safe Standalone SIEM Engine)
+  # =========================================================================
+  wazuh-manager:
+    image: wazuh/wazuh-manager:4.9.0
+    container_name: soc-wazuh-manager
+    hostname: wazuh-manager
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1514:1514/udp"
+      - "127.0.0.1:1515:1515"
+      - "127.0.0.1:514:514/udp"
+      - "127.0.0.1:55000:55000"
+    environment:
+      - WAZUH_NODE_NAME=soc-wazuh-manager
+      - API_USERNAME=${WAZUH_API_USER:-wazuh-wui}
+      - API_PASSWORD=${WAZUH_API_PASSWORD}
+      - INDEXER_URL=https://127.0.0.1:9200
+      - INDEXER_USER=admin
+      - INDEXER_PASSWORD=${WAZUH_API_PASSWORD}
+    volumes:
+      # Logs mount to capture alerts.json on host
+      - ../../infrastructure/docker/volumes/wazuh/manager/logs:/var/ossec/logs
+      # Mount custom decoders & rules into /wazuh-config-mount/ so 0-wazuh-init copies them safely
+      - ../../infrastructure/wazuh/decoders:/wazuh-config-mount/etc/decoders:ro
+      - ../../infrastructure/wazuh/rules:/wazuh-config-mount/etc/rules:ro
+      # Read-only honeypot log streams
+      - ../../infrastructure/docker/volumes/cowrie/log:/var/log/honeypots/cowrie:ro
+      - ../../infrastructure/docker/volumes/dionaea/log:/var/log/honeypots/dionaea:ro
+      - ../../infrastructure/docker/volumes/mosquitto/log:/var/log/honeypots/mosquitto:ro
+    networks:
+      soc-mgmt-net:
+        ipv4_address: 172.28.30.20
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 800M
+        reservations:
+          memory: 512M
+
+networks:
+  soc-mgmt-net:
+    name: soc-mgmt-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.30.0/24
+          gateway: 172.28.30.1

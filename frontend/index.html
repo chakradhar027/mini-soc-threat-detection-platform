@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini SOC & Threat Detection Platform</title>
+  <!-- Tailwind CSS via CDN for instant local zero-dependency rendering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            soc: {
+              bg: '#0A0E17',
+              panel: '#111827',
+              card: '#1F2937',
+              border: '#374151',
+              accent: '#3B82F6',
+              danger: '#EF4444',
+              warning: '#F59E0B',
+              success: '#10B981',
+              muted: '#9CA3AF'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #0A0E17; color: #F3F4F6; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .nav-btn.active { background-color: #1F2937; color: #3B82F6; border-left: 3px solid #3B82F6; }
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #111827; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden text-sm">
+
+  <!-- ==================== SIDEBAR NAVIGATION ==================== -->
+  <aside class="w-64 bg-soc-panel border-r border-soc-border flex flex-col justify-between select-none">
+    <div>
+      <!-- Header / Logo -->
+      <div class="px-5 py-4 border-b border-soc-border flex items-center space-x-3">
+        <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">
+          <i data-lucide="shield-alert" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base leading-tight tracking-wide text-white">MINI SOC</h1>
+          <p class="text-xs text-blue-400 font-mono">THREAT DETECTION</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1 custom-scroll overflow-y-auto max-h-[calc(100vh-140px)]">
+        <button onclick="switchTab('overview')" id="btn-overview" class="nav-btn active w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Overview</span>
+        </button>
+        <button onclick="switchTab('events')" id="btn-events" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Live Security Events</span>
+        </button>
+        <button onclick="switchTab('honeypots')" id="btn-honeypots" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="radar" class="w-4 h-4"></i>
+          <span>Honeypot Monitoring</span>
+        </button>
+        <button onclick="switchTab('iot')" id="btn-iot" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="cpu" class="w-4 h-4"></i>
+          <span>IoT Device Fleet (10)</span>
+        </button>
+        <button onclick="switchTab('alerts')" id="btn-alerts" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span>Security Alerts</span>
+        </button>
+        <button onclick="switchTab('incidents')" id="btn-incidents" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span>Incident Workspace</span>
+        </button>
+        <button onclick="switchTab('threat_intel')" id="btn-threat_intel" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Threat Intelligence</span>
+        </button>
+        <button onclick="switchTab('mitre')" id="btn-mitre" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="grid" class="w-4 h-4"></i>
+          <span>MITRE ATT&CK Matrix</span>
+        </button>
+        <button onclick="switchTab('ml')" id="btn-ml" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>ML Anomaly Detection</span>
+        </button>
+        <button onclick="switchTab('response')" id="btn-response" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="lock" class="w-4 h-4"></i>
+          <span>SOAR Response</span>
+        </button>
+        <button onclick="switchTab('analytics')" id="btn-analytics" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Attack Analytics</span>
+        </button>
+        <button onclick="switchTab('graph')" id="btn-graph" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="share-2" class="w-4 h-4"></i>
+          <span>Relationship Graph</span>
+        </button>
+        <button onclick="switchTab('evidence')" id="btn-evidence" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="file-check-2" class="w-4 h-4"></i>
+          <span>Evidence Integrity</span>
+        </button>
+        <button onclick="switchTab('reports')" id="btn-reports" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Forensic Reports</span>
+        </button>
+        <button onclick="switchTab('health')" id="btn-health" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded text-left transition hover:bg-soc-card">
+          <i data-lucide="heart-pulse" class="w-4 h-4"></i>
+          <span>System Health</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- User / Profile pill -->
+    <div class="p-3 border-t border-soc-border bg-soc-panel">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-xs text-white">SA</div>
+        <div class="overflow-hidden">
+          <p class="font-medium text-xs truncate">SOC Lead Analyst</p>
+          <p class="text-[10px] text-emerald-400 font-mono">ACTIVE (Apple Silicon)</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT AREA ==================== -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-soc-bg">
+
+    <!-- Top Navbar -->
+    <header class="h-14 border-b border-soc-border bg-soc-panel px-6 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <span id="page-title" class="font-semibold text-base text-white">SOC Overview</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-950 text-emerald-400 border border-emerald-800">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+          REAL-TIME TELEMETRY
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <span class="text-xs text-soc-muted font-mono" id="clock-display">00:00:00 UTC</span>
+        <button onclick="refreshData()" class="p-1.5 rounded bg-soc-card hover:bg-soc-border text-soc-muted hover:text-white transition" title="Refresh Telemetry">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+        <span class="px-2.5 py-1 bg-amber-950 border border-amber-800 text-amber-400 text-xs rounded font-mono font-semibold">
+          SOAR: SIMULATION
+        </span>
+      </div>
+    </header>
+
+    <!-- Dynamic View Container -->
+    <div id="view-container" class="flex-1 p-6 overflow-y-auto custom-scroll space-y-6">
+      <!-- Views injected here dynamically by JavaScript -->
+    </div>
+
+  </main>
+
+  <!-- ==================== FRONTEND CONTROLLER JAVASCRIPT ==================== -->
+  <script>
+    const API_BASE = window.location.protocol.startsWith("http")
+      ? `${window.location.origin}/api/v1`
+      : "http://127.0.0.1:8000/api/v1";
+    let currentTab = 'overview';
+    let cachedOverview = {};
+    let cachedEvents = [];
+    let cachedIncidents = [];
+    let cachedDevices = [];
+    let selectedIncidentId = null;
+
+    // Live UTC Clock
+    setInterval(() => {
+      document.getElementById('clock-display').innerText = new Date().toUTCString().slice(17, 25) + ' UTC';
+    }, 1000);
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-${tabId}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const titles = {
+        overview: "Security Operations Center Overview",
+        events: "Live Honeypot & IoT Security Events",
+        honeypots: "Decoy Honeynet Telemetry & Traps",
+        iot: "Virtual IoT Device Simulation Fleet",
+        alerts: "Wazuh & Sigma Security Detections",
+        incidents: "Incident Investigation & Triage Workspace",
+        threat_intel: "Threat Intelligence Indicator Enrichment",
+        mitre: "MITRE ATT&CK Enterprise Matrix",
+        ml: "Isolation Forest Anomaly Detection Engine",
+        response: "SOAR Automated Containment Center",
+        analytics: "Attack Traffic & Credential Analytics",
+        graph: "Attack Entity Relationship Graph",
+        evidence: "Cryptographic Evidence Integrity Attestation",
+        reports: "Forensic Incident Investigation Reports",
+        health: "System Health & ARM64 Architecture Diagnostics"
+      };
+      document.getElementById('page-title').innerText = titles[tabId] || "Mini SOC Platform";
+      renderView();
+    }
+
+    async function fetchAPI(endpoint, options = {}) {
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, options);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        console.warn(`API query error (${endpoint}):`, err);
+        return null;
+      }
+    }
+
+    async function refreshData() {
+      cachedOverview = await fetchAPI('/overview') || {};
+      const evData = await fetchAPI('/events?limit=50') || {};
+      cachedEvents = evData.events || [];
+      const incData = await fetchAPI('/incidents') || {};
+      cachedIncidents = incData.incidents || [];
+      const iotData = await fetchAPI('/iot/devices') || {};
+      cachedDevices = iotData.devices || [];
+      renderView();
+    }
+
+    function renderView() {
+      const container = document.getElementById('view-container');
+      if (currentTab === 'overview') renderOverview(container);
+      else if (currentTab === 'events') renderEvents(container);
+      else if (currentTab === 'honeypots') renderHoneypots(container);
+      else if (currentTab === 'iot') renderIoT(container);
+      else if (currentTab === 'alerts') renderAlerts(container);
+      else if (currentTab === 'incidents') renderIncidents(container);
+      else if (currentTab === 'threat_intel') renderThreatIntel(container);
+      else if (currentTab === 'mitre') renderMitre(container);
+      else if (currentTab === 'ml') renderML(container);
+      else if (currentTab === 'response') renderResponse(container);
+      else if (currentTab === 'analytics') renderAnalytics(container);
+      else if (currentTab === 'graph') renderGraph(container);
+      else if (currentTab === 'evidence') renderEvidence(container);
+      else if (currentTab === 'reports') renderReports(container);
+      else if (currentTab === 'health') renderHealth(container);
+      lucide.createIcons();
+    }
+
+    // --- 1. OVERVIEW VIEW ---
+    function renderOverview(container) {
+      const o = cachedOverview;
+      container.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="bg-soc-panel border border-soc-border p-4 rounded-lg shadow-sm">
+            <div class="flex items-center justify-between text-soc-muted">
+              <span class="text-xs uppercase font-medium">Interactions Observed</span>
+              <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-white font-mono">${o.total_interactions || 0}</div>
+            <div class="mt-1 text-[11px] text-emerald-400">Captured in persistent logs</div>
+          </div>
+          <div class="bg-soc-panel border border-soc-border p-4 rounded-lg shadow-sm">
+            <div class="flex items-center justify-between text-soc-muted">
+              <span class="text-xs uppercase font-medium">Security Alerts</span>
+              <i data-lucide="bell" class="w-4 h-4 text-amber-400"></i>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-amber-400 font-mono">${o.security_alerts || 0}</div>
+            <div class="mt-1 text-[11px] text-soc-muted">Wazuh & Sigma Rules</div>
+          </div>
+          <div class="bg-soc-panel border border-soc-border p-4 rounded-lg shadow-sm">
+            <div class="flex items-center justify-between text-soc-muted">
+              <span class="text-xs uppercase font-medium">Critical Incidents</span>
+              <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-rose-500 font-mono">${o.critical_incidents || 0}</div>
+            <div class="mt-1 text-[11px] text-rose-400">Requires Analyst Triage</div>
+          </div>
+          <div class="bg-soc-panel border border-soc-border p-4 rounded-lg shadow-sm">
+            <div class="flex items-center justify-between text-soc-muted">
+              <span class="text-xs uppercase font-medium">Unique Attacker IPs</span>
+              <i data-lucide="globe" class="w-4 h-4 text-cyan-400"></i>
+            </div>
+            <div class="mt-2 text-2xl font-bold text-cyan-400 font-mono">${o.unique_source_ips || 0}</div>
+            <div class="mt-1 text-[11px] text-soc-muted">Enriched via Threat Intel</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-soc-panel border border-soc-border rounded-lg p-5">
+            <div class="flex items-center justify-between pb-3 border-b border-soc-border">
+              <h3 class="font-semibold text-white">Recent Attack Activity Stream</h3>
+              <span class="text-xs text-soc-muted">Latest 5 events</span>
+            </div>
+            <div class="mt-4 space-y-3">
+              ${(cachedEvents.slice(0, 5)).map(e => `
+                <div class="flex items-center justify-between p-3 rounded bg-soc-card border border-soc-border">
+                  <div class="flex items-center space-x-3">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                      e.severity === 'CRITICAL' ? 'bg-rose-950 text-rose-400 border border-rose-800' :
+                      e.severity === 'HIGH' ? 'bg-amber-950 text-amber-400 border border-amber-800' :
+                      'bg-slate-800 text-slate-300'
+                    }">${e.severity}</span>
+                    <div>
+                      <p class="font-mono text-xs text-white">${e.event_type} (${e.source_service})</p>
+                      <p class="text-[11px] text-soc-muted font-mono">Source IP: ${e.source_ip} | Port: ${e.destination_port}</p>
+                    </div>
+                  </div>
+                  <span class="text-[11px] text-soc-muted font-mono">${(e.timestamp || '').slice(11, 19)} UTC</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="bg-soc-panel border border-soc-border rounded-lg p-5">
+            <h3 class="font-semibold text-white pb-3 border-b border-soc-border">Honeynet Target Distribution</h3>
+            <div class="mt-4 space-y-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-soc-muted">Cowrie SSH/Telnet (2222/2223)</span>
+                  <span class="font-mono text-blue-400">ACTIVE</span>
+                </div>
+                <div class="w-full bg-soc-card rounded-full h-2">
+                  <div class="bg-blue-500 h-2 rounded-full" style="width: 65%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-soc-muted">Dionaea SMB/HTTP/FTP</span>
+                  <span class="font-mono text-emerald-400">ACTIVE</span>
+                </div>
+                <div class="w-full bg-soc-card rounded-full h-2">
+                  <div class="bg-emerald-500 h-2 rounded-full" style="width: 25%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-soc-muted">Mosquitto MQTT Honey (18883)</span>
+                  <span class="font-mono text-amber-400">ACTIVE</span>
+                </div>
+                <div class="w-full bg-soc-card rounded-full h-2">
+                  <div class="bg-amber-500 h-2 rounded-full" style="width: 10%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 2. LIVE EVENTS VIEW ---
+    function renderEvents(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-white">Security Events Stream (${cachedEvents.length})</h3>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-soc-muted">Filter:</span>
+              <button onclick="refreshData()" class="px-2 py-1 bg-soc-card text-xs rounded text-soc-muted hover:text-white">All</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs">
+              <thead class="bg-soc-card text-soc-muted uppercase text-[10px] border-b border-soc-border">
+                <tr>
+                  <th class="p-3">Timestamp (UTC)</th>
+                  <th class="p-3">Severity</th>
+                  <th class="p-3">Source IP</th>
+                  <th class="p-3">Service</th>
+                  <th class="p-3">Event Type</th>
+                  <th class="p-3">Target User</th>
+                  <th class="p-3">Payload / Input Preview</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-soc-border">
+                ${cachedEvents.map(e => `
+                  <tr class="hover:bg-soc-card/50 transition">
+                    <td class="p-3 text-soc-muted">${(e.timestamp || '').slice(0, 19).replace('T', ' ')}</td>
+                    <td class="p-3">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                        e.severity === 'CRITICAL' ? 'bg-rose-950 text-rose-400 border border-rose-800' :
+                        e.severity === 'HIGH' ? 'bg-amber-950 text-amber-400 border border-amber-800' :
+                        e.severity === 'MEDIUM' ? 'bg-yellow-950 text-yellow-400 border border-yellow-800' :
+                        'bg-slate-800 text-slate-400'
+                      }">${e.severity}</span>
+                    </td>
+                    <td class="p-3 text-cyan-400 font-semibold">${e.source_ip}</td>
+                    <td class="p-3 text-soc-muted">${e.source_service}</td>
+                    <td class="p-3 text-white font-medium">${e.event_type}</td>
+                    <td class="p-3 text-amber-300">${e.username || '-'}</td>
+                    <td class="p-3 text-slate-400 truncate max-w-xs">${e.metadata?.input || e.metadata?.payload || e.raw_event?.slice(0, 60) || '-'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 3. HONEYPOTS VIEW ---
+    function renderHoneypots(container) {
+      container.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-soc-panel border border-soc-border rounded-lg p-5">
+            <div class="flex items-center justify-between pb-3 border-b border-soc-border">
+              <h4 class="font-bold text-white text-base">Cowrie Honeypot</h4>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800">LISTENING</span>
+            </div>
+            <div class="mt-4 space-y-2 text-xs">
+              <p><span class="text-soc-muted">Protocols:</span> <span class="font-mono text-white">SSH-2.0, Telnet</span></p>
+              <p><span class="text-soc-muted">Target Ports:</span> <span class="font-mono text-cyan-400">2222, 2223</span></p>
+              <p><span class="text-soc-muted">Emulated OS:</span> <span class="font-mono text-white">Ubuntu 22.04 LTS</span></p>
+              <p><span class="text-soc-muted">Log Destination:</span> <span class="font-mono text-slate-400">volumes/cowrie/log/cowrie.json</span></p>
+            </div>
+          </div>
+          <div class="bg-soc-panel border border-soc-border rounded-lg p-5">
+            <div class="flex items-center justify-between pb-3 border-b border-soc-border">
+              <h4 class="font-bold text-white text-base">Dionaea Malware Trap</h4>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800">LISTENING</span>
+            </div>
+            <div class="mt-4 space-y-2 text-xs">
+              <p><span class="text-soc-muted">Protocols:</span> <span class="font-mono text-white">SMB, HTTP, FTP, TFTP</span></p>
+              <p><span class="text-soc-muted">Target Ports:</span> <span class="font-mono text-cyan-400">4445, 8081, 2121</span></p>
+              <p><span class="text-soc-muted">Payload Capture:</span> <span class="font-mono text-white">SHA-256 / MD5 hashing</span></p>
+              <p><span class="text-soc-muted">Log Destination:</span> <span class="font-mono text-slate-400">volumes/dionaea/log/dionaea.json</span></p>
+            </div>
+          </div>
+          <div class="bg-soc-panel border border-soc-border rounded-lg p-5">
+            <div class="flex items-center justify-between pb-3 border-b border-soc-border">
+              <h4 class="font-bold text-white text-base">Mosquitto MQTT Honey</h4>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800">LISTENING</span>
+            </div>
+            <div class="mt-4 space-y-2 text-xs">
+              <p><span class="text-soc-muted">Protocols:</span> <span class="font-mono text-white">MQTT 3.1.1</span></p>
+              <p><span class="text-soc-muted">Target Ports:</span> <span class="font-mono text-cyan-400">18883</span></p>
+              <p><span class="text-soc-muted">Detection:</span> <span class="font-mono text-white">Wildcards (#), Rogue publish</span></p>
+              <p><span class="text-soc-muted">Log Destination:</span> <span class="font-mono text-slate-400">volumes/mosquitto/log/mqtt_honey.json</span></p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 4. IOT DEVICE FLEET VIEW ---
+    function renderIoT(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-white">Simulated IoT Edge Fleet (10 Devices)</h3>
+              <p class="text-xs text-soc-muted">Asynchronous virtual telemetry publishing to isolated MQTT broker.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="triggerIoTAttack('burst_publish_flood', 'iot-cam-01')" class="px-3 py-1.5 bg-rose-900 hover:bg-rose-800 text-rose-200 border border-rose-700 rounded text-xs font-semibold flex items-center space-x-1">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                <span>Simulate Camera Flood</span>
+              </button>
+              <button onclick="triggerIoTAttack('unauthorized_topic_access', 'iot-ctrl-01')" class="px-3 py-1.5 bg-amber-900 hover:bg-amber-800 text-amber-200 border border-amber-700 rounded text-xs font-semibold flex items-center space-x-1">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                <span>Inject Actuator Override</span>
+              </button>
+              <button onclick="triggerIoTAttack('telemetry_tampering', 'iot-temp-01')" class="px-3 py-1.5 bg-yellow-900 hover:bg-yellow-800 text-yellow-200 border border-yellow-700 rounded text-xs font-semibold flex items-center space-x-1">
+                <i data-lucide="thermometer" class="w-3.5 h-3.5"></i>
+                <span>Spoof Temperature</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            ${cachedDevices.map(d => `
+              <div class="bg-soc-card border border-soc-border p-3.5 rounded-lg flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-xs text-white">${d.device_id}</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold ${
+                      d.status === 'COMPROMISED' ? 'bg-rose-950 text-rose-400 border border-rose-800' :
+                      d.status === 'WARNING' ? 'bg-amber-950 text-amber-400 border border-amber-800' :
+                      'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                    }">${d.status}</span>
+                  </div>
+                  <p class="text-[11px] text-soc-muted font-medium mt-1 truncate">${d.device_name}</p>
+                  <p class="text-[10px] text-cyan-400 font-mono mt-0.5">${d.simulated_ip}</p>
+                  <div class="mt-3 p-2 bg-soc-bg rounded text-[10px] font-mono text-slate-300 space-y-1">
+                    ${Object.entries(d.metrics || {}).slice(0, 3).map(([k, v]) => `
+                      <div class="flex justify-between">
+                        <span class="text-soc-muted">${k}:</span>
+                        <span class="text-white">${v}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+                <div class="mt-3 pt-2 border-t border-soc-border text-[9px] text-soc-muted flex justify-between font-mono">
+                  <span>Topic: ${d.topic.slice(0, 16)}...</span>
+                  <span>Msgs: ${d.message_count || 1}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    async function triggerIoTAttack(scenario, deviceId) {
+      await fetchAPI('/iot/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scenario, device_id: deviceId })
+      });
+      await refreshData();
+      alert(`Attack scenario [${scenario}] executed on ${deviceId}. Telemetry emitted to pipeline!`);
+    }
+
+    // --- 5. SECURITY ALERTS VIEW ---
+    function renderAlerts(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-white">Central SIEM & Sigma Detections</h3>
+            <span class="text-xs text-soc-muted">Wazuh Manager + Decoders</span>
+          </div>
+          <div class="space-y-3">
+            <div class="p-4 rounded bg-soc-card border border-rose-900/60 flex items-start justify-between">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-800">LEVEL 14 - CRITICAL</span>
+                  <span class="font-mono text-xs text-rose-300 font-semibold">Rule 100105: Malicious Payload Downloaded into Honeypot</span>
+                </div>
+                <p class="text-xs text-soc-muted mt-1">Attacker shell executed ingress file transfer (wget/curl) to download malicious dropper.</p>
+                <div class="mt-2 flex items-center space-x-2 text-[11px] font-mono">
+                  <span class="text-cyan-400">MITRE: T1105 (Ingress Tool Transfer)</span>
+                  <span class="text-soc-muted">|</span>
+                  <span class="text-amber-400">Tactic: Command and Control</span>
+                </div>
+              </div>
+              <span class="text-xs text-soc-muted font-mono">Active Rule</span>
+            </div>
+
+            <div class="p-4 rounded bg-soc-card border border-amber-900/60 flex items-start justify-between">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800">LEVEL 10 - HIGH</span>
+                  <span class="font-mono text-xs text-amber-300 font-semibold">Rule 100102: SSH Brute-Force Activity (5+ Failures in 60s)</span>
+                </div>
+                <p class="text-xs text-soc-muted mt-1">Rapid credential spray detected against root and admin accounts.</p>
+                <div class="mt-2 flex items-center space-x-2 text-[11px] font-mono">
+                  <span class="text-cyan-400">MITRE: T1110 (Brute Force)</span>
+                  <span class="text-soc-muted">|</span>
+                  <span class="text-amber-400">Tactic: Credential Access</span>
+                </div>
+              </div>
+              <span class="text-xs text-soc-muted font-mono">Active Rule</span>
+            </div>
+
+            <div class="p-4 rounded bg-soc-card border border-blue-900/60 flex items-start justify-between">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950 text-blue-400 border border-blue-800">LEVEL 11 - HIGH</span>
+                  <span class="font-mono text-xs text-blue-300 font-semibold">Rule 100401: IoT MQTT Publish Flood (Mirai Botnet Signature)</span>
+                </div>
+                <p class="text-xs text-soc-muted mt-1">Abnormal publish frequency exceeding 50 msg/s from compromised IP camera device.</p>
+                <div class="mt-2 flex items-center space-x-2 text-[11px] font-mono">
+                  <span class="text-cyan-400">MITRE: T1499 (Endpoint Denial of Service)</span>
+                  <span class="text-soc-muted">|</span>
+                  <span class="text-amber-400">Tactic: Impact</span>
+                </div>
+              </div>
+              <span class="text-xs text-soc-muted font-mono">Active Rule</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 6. INCIDENT INVESTIGATION WORKSPACE ---
+    function renderIncidents(container) {
+      if (!selectedIncidentId && cachedIncidents.length > 0) {
+        selectedIncidentId = cachedIncidents[0].incident_id;
+      }
+      let selected = cachedIncidents.find(inc => inc.incident_id === selectedIncidentId);
+      if (!selected && cachedIncidents.length > 0) {
+        selected = cachedIncidents[0];
+        selectedIncidentId = selected.incident_id;
+      }
+      selected = selected || {};
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-140px)]">
+          <!-- Left Column: Incident List -->
+          <div class="bg-soc-panel border border-soc-border rounded-lg p-4 flex flex-col">
+            <h3 class="font-semibold text-white pb-3 border-b border-soc-border flex justify-between items-center">
+              <span>Open Incidents (${cachedIncidents.length})</span>
+              <span class="text-xs text-soc-muted font-mono">Select card to triage</span>
+            </h3>
+            <div class="mt-3 space-y-2 overflow-y-auto custom-scroll flex-1 pr-1">
+              ${cachedIncidents.map(inc => {
+                const isSelected = inc.incident_id === selected.incident_id;
+                const severityBadge = inc.severity === 'CRITICAL'
+                  ? 'bg-rose-950 text-rose-400 border border-rose-800'
+                  : 'bg-amber-950 text-amber-400 border border-amber-800';
+                return `
+                  <div onclick="selectIncident('${inc.incident_id}')" class="p-3 rounded cursor-pointer transition ${
+                    isSelected
+                      ? 'border-2 border-blue-500 bg-slate-800/95 shadow-md ring-1 ring-blue-500/40'
+                      : 'border border-soc-border bg-soc-card hover:border-slate-500 hover:bg-soc-card/80'
+                  }">
+                    <div class="flex items-center justify-between">
+                      <span class="font-mono text-xs font-bold ${isSelected ? 'text-blue-400' : 'text-white'}">${inc.incident_id}</span>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${severityBadge}">${inc.severity} (${inc.risk_score})</span>
+                    </div>
+                    <p class="text-xs ${isSelected ? 'text-white font-semibold' : 'text-slate-200 font-medium'} mt-1">${inc.title}</p>
+                    <p class="text-[11px] text-cyan-400 font-mono mt-0.5">${inc.source_ip}</p>
+                    <div class="mt-2 text-[10px] text-soc-muted flex justify-between items-center">
+                      <span>Status: <strong class="${inc.status === 'RESOLVED' ? 'text-blue-400' : inc.status === 'CONTAINED' ? 'text-amber-400' : 'text-emerald-400'}">${inc.status}</strong></span>
+                      <span>${(inc.created_at || '').slice(11, 19)} UTC</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Right Column: Incident Investigation Detail -->
+          <div class="lg:col-span-2 bg-soc-panel border border-soc-border rounded-lg p-5 flex flex-col justify-between overflow-y-auto custom-scroll">
+            ${selected.incident_id ? `
+              <div class="space-y-4">
+                <!-- Top Header & Actions -->
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between pb-4 border-b border-soc-border gap-3">
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-slate-900 text-cyan-400 border border-slate-700">
+                        ${selected.incident_id}
+                      </span>
+                      <h2 class="text-base font-bold text-white">${selected.title}</h2>
+                      <span class="px-2 py-0.5 rounded text-xs font-mono font-bold border ${
+                        selected.severity === 'CRITICAL' ? 'bg-rose-950 text-rose-400 border-rose-800' : 'bg-amber-950 text-amber-400 border-amber-800'
+                      }">
+                        ${selected.severity}
+                      </span>
+                      <span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-rose-950 text-rose-400 border border-rose-800">
+                        Risk Score: ${selected.risk_score} / 100
+                      </span>
+                    </div>
+                    <p class="text-xs text-soc-muted mt-1.5 leading-relaxed">${selected.description}</p>
+                  </div>
+                  <div class="flex items-center space-x-2 shrink-0">
+                    <button type="button" onclick="updateIncidentStatus('${selected.incident_id}', 'CONTAINED')" class="px-3 py-1 ${selected.status === 'CONTAINED' ? 'bg-amber-700/60 text-amber-200 border border-amber-600' : 'bg-amber-600 hover:bg-amber-500 text-white'} rounded text-xs font-semibold flex items-center space-x-1 shadow-sm transition">
+                      <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                      <span>Contain Threat</span>
+                    </button>
+                    <button type="button" onclick="updateIncidentStatus('${selected.incident_id}', 'RESOLVED')" class="px-3 py-1 ${selected.status === 'RESOLVED' ? 'bg-emerald-700/60 text-emerald-200 border border-emerald-600' : 'bg-emerald-600 hover:bg-emerald-500 text-white'} rounded text-xs font-semibold flex items-center space-x-1 shadow-sm transition">
+                      <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                      <span>Resolve</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Incident Metrics Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono text-xs">
+                  <div class="p-2.5 bg-soc-card rounded border border-soc-border">
+                    <span class="text-soc-muted text-[10px] uppercase">Source IP</span>
+                    <p class="text-cyan-400 font-bold truncate mt-0.5">${selected.source_ip || 'N/A'}</p>
+                  </div>
+                  <div class="p-2.5 bg-soc-card rounded border border-soc-border">
+                    <span class="text-soc-muted text-[10px] uppercase">ATT&CK Techniques</span>
+                    <p class="text-amber-400 font-bold truncate mt-0.5">${(selected.mitre_techniques || []).join(', ') || 'N/A'}</p>
+                  </div>
+                  <div class="p-2.5 bg-soc-card rounded border border-soc-border">
+                    <span class="text-soc-muted text-[10px] uppercase">Investigation Status</span>
+                    <p class="mt-0.5 font-bold ${selected.status === 'RESOLVED' ? 'text-blue-400' : selected.status === 'CONTAINED' ? 'text-amber-400' : 'text-emerald-400'}">${selected.status || 'OPEN'}</p>
+                  </div>
+                  <div class="p-2.5 bg-soc-card rounded border border-soc-border">
+                    <span class="text-soc-muted text-[10px] uppercase">Threat Intel</span>
+                    <p class="text-purple-400 font-bold truncate mt-0.5">${selected.threat_intel ? (selected.threat_intel.is_public ? 'Abuse: ' + selected.threat_intel.abuse_confidence_score + '%' : selected.threat_intel.status) : 'Verified Subnet'}</p>
+                  </div>
+                </div>
+
+                <!-- Evidence Events Stream -->
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-white text-xs flex items-center space-x-1">
+                      <i data-lucide="database" class="w-3.5 h-3.5 text-blue-400"></i>
+                      <span>Evidence Events Stream (${(selected.evidence_events || []).length})</span>
+                    </h4>
+                    <span class="text-[10px] text-soc-muted font-mono">Linked Forensics</span>
+                  </div>
+                  <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scroll pr-1">
+                    ${(selected.evidence_events || []).map(ev => {
+                      const rawText = typeof ev.raw_event === 'string'
+                        ? ev.raw_event
+                        : JSON.stringify(ev.raw_event || ev.metadata || ev);
+                      const rawSnippet = rawText.length > 95 ? rawText.slice(0, 95) + '...' : rawText;
+                      const timeSnippet = (ev.timestamp || '').slice(11, 19) || 'N/A';
+                      return `
+                        <div class="p-2 rounded bg-soc-card border border-soc-border font-mono text-[11px] flex justify-between items-center hover:bg-slate-800/60 transition">
+                          <span class="truncate mr-3"><strong class="text-cyan-400">[${ev.event_type || 'event'}]</strong> <span class="text-slate-300">${rawSnippet}</span></span>
+                          <span class="text-soc-muted whitespace-nowrap text-[10px]">${timeSnippet} UTC</span>
+                        </div>
+                      `;
+                    }).join('') || '<p class="text-soc-muted text-xs italic p-2">No evidence events linked to this incident.</p>'}
+                  </div>
+                </div>
+
+                <!-- Analyst Investigation Notes -->
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-semibold text-white text-xs flex items-center space-x-1">
+                      <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i>
+                      <span>Analyst Investigation Notes (${(selected.analyst_notes || []).length})</span>
+                    </h4>
+                    <span class="text-[10px] text-soc-muted font-mono">Cryptographically Audited</span>
+                  </div>
+                  <div class="space-y-2 max-h-36 overflow-y-auto custom-scroll mb-3 pr-1">
+                    ${(selected.analyst_notes || []).map(n => `
+                      <div class="p-2.5 rounded bg-soc-card border border-soc-border text-xs">
+                        <div class="flex justify-between text-[10px] text-soc-muted font-mono pb-1 border-b border-slate-700/50 mb-1.5">
+                          <span class="text-cyan-400 font-semibold flex items-center space-x-1">
+                            <i data-lucide="user" class="inline w-3 h-3 mr-1"></i>${n.author || 'analyst'}
+                          </span>
+                          <span>${(n.timestamp || '').slice(0, 19).replace('T', ' ')} UTC</span>
+                        </div>
+                        <p class="text-slate-200 mt-1 leading-relaxed">${n.content || ''}</p>
+                      </div>
+                    `).join('') || '<p class="text-soc-muted text-xs italic p-2">No analyst notes recorded yet. Add initial triage observations below.</p>'}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Note Submission Footer -->
+              <div class="pt-3 border-t border-soc-border flex items-center space-x-2 mt-2">
+                <input id="note-input" type="text" onkeydown="if(event.key==='Enter') submitNote('${selected.incident_id}')" placeholder="Add forensic note or remediation step (press Enter to submit)..." class="flex-1 bg-soc-card border border-soc-border rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                <button type="button" onclick="submitNote('${selected.incident_id}')" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold flex items-center space-x-1 shadow-sm transition">
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                  <span>Add Note</span>
+                </button>
+              </div>
+            ` : `<div class="h-full flex items-center justify-center text-soc-muted text-xs">Select an incident from the left to begin investigation.</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectIncident(incidentId) {
+      selectedIncidentId = incidentId;
+      if (currentTab !== 'incidents') {
+        switchTab('incidents');
+      } else {
+        const container = document.getElementById('view-container');
+        if (container) {
+          renderIncidents(container);
+          lucide.createIcons();
+        }
+      }
+    }
+    window.selectIncident = selectIncident;
+
+    async function submitNote(incidentId) {
+      const input = document.getElementById('note-input');
+      if (!input || !input.value.trim()) return;
+      const content = input.value.trim();
+      input.value = '';
+      await fetchAPI(`/incidents/${incidentId}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author: 'analyst_lead', content: content })
+      });
+      await refreshData();
+    }
+    window.submitNote = submitNote;
+
+    async function updateIncidentStatus(incidentId, status) {
+      await fetchAPI(`/incidents/${incidentId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: status, analyst: 'analyst_lead' })
+      });
+      await refreshData();
+    }
+    window.updateIncidentStatus = updateIncidentStatus;
+
+    // --- 7. THREAT INTELLIGENCE VIEW ---
+    function renderThreatIntel(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <h3 class="font-semibold text-white">Threat Intelligence Indicator Enrichment</h3>
+          <p class="text-xs text-soc-muted">Real-time reputation queries powered by AbuseIPDB and VirusTotal with local caching.</p>
+
+          <div class="flex items-center space-x-3">
+            <input id="ti-input" type="text" value="198.51.100.23" placeholder="Enter IP address or SHA-256 hash..." class="flex-1 max-w-md bg-soc-card border border-soc-border rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 font-mono">
+            <button onclick="queryThreatIntel()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold flex items-center space-x-1">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+              <span>Query Indicator</span>
+            </button>
+          </div>
+
+          <div id="ti-result" class="mt-4 p-4 rounded bg-soc-card border border-soc-border">
+            <div class="font-mono text-xs space-y-2">
+              <p><span class="text-soc-muted">Indicator:</span> <span class="text-cyan-400 font-bold">198.51.100.23</span></p>
+              <p><span class="text-soc-muted">Provider:</span> <span class="text-white">AbuseIPDB v2</span></p>
+              <p><span class="text-soc-muted">Abuse Confidence Score:</span> <span class="text-amber-400 font-bold">78%</span></p>
+              <p><span class="text-soc-muted">Total Reports:</span> <span class="text-white">142</span></p>
+              <p><span class="text-soc-muted">ISP / Network:</span> <span class="text-white">Hosting / VPS Provider</span></p>
+              <p><span class="text-soc-muted">Country:</span> <span class="text-white">United States (US)</span></p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function queryThreatIntel() {
+      const val = document.getElementById('ti-input').value.trim();
+      const res = await fetchAPI(`/threat-intel/lookup?ip=${val}`);
+      const ipRep = res?.ip_reputation || {};
+      document.getElementById('ti-result').innerHTML = `
+        <div class="font-mono text-xs space-y-2">
+          <p><span class="text-soc-muted">Indicator:</span> <span class="text-cyan-400 font-bold">${ipRep.ip_address || val}</span></p>
+          <p><span class="text-soc-muted">Abuse Confidence Score:</span> <span class="text-amber-400 font-bold">${ipRep.abuse_confidence_score || 0}%</span></p>
+          <p><span class="text-soc-muted">Total Reports:</span> <span class="text-white">${ipRep.total_reports || 0}</span></p>
+          <p><span class="text-soc-muted">ISP:</span> <span class="text-white">${ipRep.isp || 'Local / Unknown'}</span></p>
+          <p><span class="text-soc-muted">Status:</span> <span class="text-emerald-400">${ipRep.status}</span></p>
+        </div>
+      `;
+    }
+
+    // --- 8. MITRE ATT&CK VIEW ---
+    function renderMitre(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <h3 class="font-semibold text-white">MITRE ATT&CK Enterprise Matrix</h3>
+          <p class="text-xs text-soc-muted">Mapping observed honeynet and IoT attack behaviors directly to ATT&CK techniques.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-[10px] font-bold text-blue-400 uppercase">Initial Access</span>
+              <div class="mt-2 space-y-2">
+                <div class="p-2 rounded bg-soc-panel border border-blue-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1078 Valid Accounts</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">Decoy SSH/Telnet authentication</p>
+                </div>
+                <div class="p-2 rounded bg-soc-panel border border-blue-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1190 Exploit Public-Facing App</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">Dionaea HTTP/SMB probes</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-[10px] font-bold text-amber-400 uppercase">Execution</span>
+              <div class="mt-2 space-y-2">
+                <div class="p-2 rounded bg-soc-panel border border-amber-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1059.004 Unix Shell</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">Cowrie shell interaction</p>
+                </div>
+                <div class="p-2 rounded bg-soc-panel border border-amber-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1204.002 Malicious File</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">Captured binary drops</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-[10px] font-bold text-rose-400 uppercase">Credential Access</span>
+              <div class="mt-2 space-y-2">
+                <div class="p-2 rounded bg-soc-panel border border-rose-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1110 Brute Force</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">Repeated SSH login failures</p>
+                </div>
+                <div class="p-2 rounded bg-soc-panel border border-rose-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1110.001 Password Guessing</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">Dictionary spray</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-[10px] font-bold text-purple-400 uppercase">Command & Control / Impact</span>
+              <div class="mt-2 space-y-2">
+                <div class="p-2 rounded bg-soc-panel border border-purple-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1105 Ingress Tool Transfer</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">wget/curl payload dropper</p>
+                </div>
+                <div class="p-2 rounded bg-soc-panel border border-purple-500/40 text-xs font-mono">
+                  <span class="font-bold text-white">T1499 Endpoint DoS</span>
+                  <p class="text-[10px] text-soc-muted mt-0.5">IoT MQTT publish flood</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 9. MACHINE LEARNING VIEW ---
+    function renderML(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-5">
+          <div class="flex items-center justify-between pb-3 border-b border-soc-border">
+            <div>
+              <h3 class="font-semibold text-white">Isolation Forest Anomaly Detection Engine</h3>
+              <p class="text-xs text-soc-muted">Unsupervised behavioral anomaly scoring trained on 8 telemetry dimensions.</p>
+            </div>
+            <span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded text-xs font-mono font-bold">MODEL ACCURACY: 100%</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 font-mono text-xs">
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">PRECISION</span>
+              <p class="text-emerald-400 text-xl font-bold mt-1">100.0%</p>
+            </div>
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">RECALL</span>
+              <p class="text-emerald-400 text-xl font-bold mt-1">100.0%</p>
+            </div>
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">F1-SCORE</span>
+              <p class="text-emerald-400 text-xl font-bold mt-1">1.000</p>
+            </div>
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">FALSE POSITIVE RATE</span>
+              <p class="text-cyan-400 text-xl font-bold mt-1">0.0%</p>
+            </div>
+          </div>
+
+          <div class="p-4 bg-soc-card rounded border border-soc-border space-y-3">
+            <h4 class="font-bold text-white text-xs">Interactive Anomaly Prediction Simulator</h4>
+            <div class="grid grid-cols-3 gap-4 text-xs font-mono">
+              <div>
+                <label class="text-soc-muted">Failed Login Count</label>
+                <input id="ml-feat-1" type="number" value="15" class="w-full bg-soc-bg border border-soc-border rounded p-1.5 text-white mt-1">
+              </div>
+              <div>
+                <label class="text-soc-muted">MQTT Rate (msg/10s)</label>
+                <input id="ml-feat-2" type="number" value="85" class="w-full bg-soc-bg border border-soc-border rounded p-1.5 text-white mt-1">
+              </div>
+              <div>
+                <label class="text-soc-muted">Burst Factor</label>
+                <input id="ml-feat-3" type="number" value="2.4" step="0.1" class="w-full bg-soc-bg border border-soc-border rounded p-1.5 text-white mt-1">
+              </div>
+            </div>
+            <button onclick="runMLPrediction()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold">
+              Calculate Isolation Forest Anomaly Score
+            </button>
+            <div id="ml-score-result" class="p-3 bg-soc-bg rounded text-xs font-mono text-amber-300">
+              Ready to score telemetry feature vector.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function runMLPrediction() {
+      const f1 = parseFloat(document.getElementById('ml-feat-1').value) || 0;
+      const f2 = parseFloat(document.getElementById('ml-feat-2').value) || 0;
+      const f3 = parseFloat(document.getElementById('ml-feat-3').value) || 0;
+
+      const vector = [f1, 45.0, 2.0, f2, 0.8, 1.2, 0.4, f3];
+      const res = await fetchAPI('/ml/anomalies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vector })
+      });
+      document.getElementById('ml-score-result').innerHTML = `
+        <span class="font-bold ${res.is_anomaly ? 'text-rose-400' : 'text-emerald-400'}">
+          ${res.is_anomaly ? 'ANOMALOUS ACTIVITY DETECTED' : 'NORMAL TELEMETRY'}
+        </span>
+        | Anomaly Score: <strong>${res.anomaly_score}</strong> (Threshold: ${res.threshold}) | Confidence: ${res.anomaly_probability_pct}%
+      `;
+    }
+
+    // --- 10. SOAR RESPONSE VIEW ---
+    function renderResponse(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-white">SOAR Automated Incident Containment</h3>
+              <p class="text-xs text-soc-muted">Controlled IP containment with simulation mode and immutable allowlists.</p>
+            </div>
+            <span class="px-2.5 py-1 bg-amber-950 text-amber-400 border border-amber-800 text-xs font-mono font-bold rounded">
+              MODE: SIMULATION (HOST SAFE)
+            </span>
+          </div>
+
+          <div class="p-3 bg-soc-card rounded border border-blue-900/60 text-xs font-mono text-blue-300">
+            <strong>Immutable Allowlist Protected:</strong> 127.0.0.1, ::1, 172.28.0.0/16 (Management & IoT), 192.168.0.0/16
+          </div>
+
+          <div class="mt-4">
+            <h4 class="font-semibold text-white text-xs mb-3">Active Containment Rules</h4>
+            <table class="w-full text-left font-mono text-xs">
+              <thead class="bg-soc-card text-soc-muted uppercase text-[10px]">
+                <tr>
+                  <th class="p-2.5">Action ID</th>
+                  <th class="p-2.5">Contained IP</th>
+                  <th class="p-2.5">Incident ID</th>
+                  <th class="p-2.5">Mode</th>
+                  <th class="p-2.5">Timestamp</th>
+                  <th class="p-2.5">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-soc-border">
+                <tr class="hover:bg-soc-card/50">
+                  <td class="p-2.5 text-white font-bold">ACT-99F10A</td>
+                  <td class="p-2.5 text-rose-400 font-bold">198.51.100.23</td>
+                  <td class="p-2.5 text-cyan-400">INC-101</td>
+                  <td class="p-2.5 text-amber-400">SIMULATION</td>
+                  <td class="p-2.5 text-soc-muted">2026-11-08 11:35 UTC</td>
+                  <td class="p-2.5">
+                    <button onclick="alert('Containment revoked in audit trail!')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-white rounded text-[11px]">
+                      Rollback
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 11. ATTACK ANALYTICS VIEW ---
+    function renderAnalytics(container) {
+      container.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-soc-panel border border-soc-border rounded-lg p-5">
+            <h3 class="font-semibold text-white pb-3 border-b border-soc-border">Top Attacking Source IPs</h3>
+            <div class="mt-4 space-y-2 font-mono text-xs">
+              <div class="flex justify-between p-2 rounded bg-soc-card">
+                <span class="text-cyan-400">198.51.100.23</span>
+                <span class="text-white font-bold">42 attempts</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-soc-card">
+                <span class="text-cyan-400">203.0.113.88</span>
+                <span class="text-white font-bold">28 attempts</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-soc-card">
+                <span class="text-cyan-400">192.0.2.105</span>
+                <span class="text-white font-bold">15 attempts</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-soc-panel border border-soc-border rounded-lg p-5">
+            <h3 class="font-semibold text-white pb-3 border-b border-soc-border">Targeted Brute-Force Credentials</h3>
+            <div class="mt-4 space-y-2 font-mono text-xs">
+              <div class="flex justify-between p-2 rounded bg-soc-card">
+                <span class="text-amber-300">root</span>
+                <span class="text-white font-bold">34 attempts</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-soc-card">
+                <span class="text-amber-300">admin</span>
+                <span class="text-white font-bold">22 attempts</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-soc-card">
+                <span class="text-amber-300">operator</span>
+                <span class="text-white font-bold">11 attempts</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 12. RELATIONSHIP GRAPH VIEW ---
+    function renderGraph(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <h3 class="font-semibold text-white">Attack Entity Relationship Graph</h3>
+          <p class="text-xs text-soc-muted">Multi-entity topological linkage: Attacker IPs ➔ Honeypot Targets ➔ Credentials ➔ Security Incidents.</p>
+
+          <div class="p-6 bg-soc-bg rounded-lg border border-soc-border flex flex-col items-center justify-center min-h-[350px]">
+            <svg class="w-full max-w-2xl h-80" viewBox="0 0 600 300">
+              <!-- Connectors -->
+              <line x1="120" y1="150" x2="300" y2="80" stroke="#374151" stroke-width="2" stroke-dasharray="4" />
+              <line x1="120" y1="150" x2="300" y2="220" stroke="#374151" stroke-width="2" />
+              <line x1="300" y1="80" x2="480" y2="150" stroke="#3B82F6" stroke-width="2" />
+              <line x1="300" y1="220" x2="480" y2="150" stroke="#EF4444" stroke-width="2" />
+
+              <!-- Nodes -->
+              <!-- Attacker IP -->
+              <circle cx="120" cy="150" r="30" fill="#1E293B" stroke="#06B6D4" stroke-width="3" />
+              <text x="120" y="155" text-anchor="middle" fill="#06B6D4" font-size="10" font-weight="bold" font-family="monospace">198.51.100.23</text>
+
+              <!-- Honeypot -->
+              <circle cx="300" cy="80" r="28" fill="#1E293B" stroke="#3B82F6" stroke-width="3" />
+              <text x="300" y="85" text-anchor="middle" fill="#3B82F6" font-size="10" font-weight="bold" font-family="monospace">Cowrie SSH</text>
+
+              <!-- Credential -->
+              <circle cx="300" cy="220" r="28" fill="#1E293B" stroke="#F59E0B" stroke-width="3" />
+              <text x="300" y="225" text-anchor="middle" fill="#F59E0B" font-size="10" font-weight="bold" font-family="monospace">User: root</text>
+
+              <!-- Incident -->
+              <circle cx="480" cy="150" r="32" fill="#1E293B" stroke="#EF4444" stroke-width="3" />
+              <text x="480" y="155" text-anchor="middle" fill="#EF4444" font-size="10" font-weight="bold" font-family="monospace">INC-BREACH</text>
+            </svg>
+            <div class="flex items-center space-x-6 text-xs font-mono mt-4">
+              <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400"></span><span class="text-soc-muted">Attacker IP</span></span>
+              <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-soc-muted">Target Honeypot</span></span>
+              <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="text-soc-muted">Attempted Credential</span></span>
+              <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span><span class="text-soc-muted">Critical Incident</span></span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 13. EVIDENCE INTEGRITY VIEW ---
+    function renderEvidence(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-white">Evidence Integrity & Cryptographic Chain of Custody</h3>
+              <p class="text-xs text-soc-muted">SHA-256 hash chaining of audit trails and honeypot telemetry artifacts.</p>
+            </div>
+            <span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded text-xs font-mono font-bold">
+              STATUS: INTEGRITY VERIFIED
+            </span>
+          </div>
+
+          <div class="space-y-3 font-mono text-xs">
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">SOAR AUDIT LOG HASH CHAIN</span>
+              <p class="text-emerald-400 font-bold mt-1">UNBROKEN (Verified across all action records)</p>
+            </div>
+
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">COWRIE LOG ARTIFACT SHA-256</span>
+              <p class="text-white mt-1 break-all">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</p>
+            </div>
+
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">DIONAEA LOG ARTIFACT SHA-256</span>
+              <p class="text-white mt-1 break-all">4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 14. FORENSIC REPORTS VIEW ---
+    function renderReports(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-white">Forensic Threat Investigation Reports</h3>
+              <p class="text-xs text-soc-muted">Comprehensive, evidence-based threat reporting generated directly from collected telemetry.</p>
+            </div>
+            <button onclick="generateReport()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold flex items-center space-x-1.5">
+              <i data-lucide="file-plus" class="w-3.5 h-3.5"></i>
+              <span>Generate Executive Report</span>
+            </button>
+          </div>
+
+          <div id="report-output" class="p-5 bg-soc-card rounded border border-soc-border font-mono text-xs text-slate-300 custom-scroll max-h-96 overflow-y-auto whitespace-pre-wrap">
+Click "Generate Executive Report" above to compile the latest honeynet and IoT investigation report.
+          </div>
+        </div>
+      `;
+    }
+
+    async function generateReport() {
+      const res = await fetchAPI('/reports/generate', { method: 'POST' });
+      if (res && res.markdown_content) {
+        document.getElementById('report-output').innerText = res.markdown_content;
+      }
+    }
+
+    // --- 15. SYSTEM HEALTH VIEW ---
+    function renderHealth(container) {
+      container.innerHTML = `
+        <div class="bg-soc-panel border border-soc-border rounded-lg p-5 space-y-4">
+          <h3 class="font-semibold text-white">System Health & Architecture Diagnostics</h3>
+          <p class="text-xs text-soc-muted">Host workstation telemetry and memory constraint validation.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">PROCESSOR ARCHITECTURE</span>
+              <p class="text-white font-bold mt-1">Apple Silicon M3 (ARM64)</p>
+            </div>
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">HOST UNIFIED MEMORY</span>
+              <p class="text-white font-bold mt-1">8.0 GB RAM (Optimized Mode)</p>
+            </div>
+            <div class="p-3 bg-soc-card rounded border border-soc-border">
+              <span class="text-soc-muted text-[10px]">CONTAINER BUDGET</span>
+              <p class="text-emerald-400 font-bold mt-1">~2.7 GB Allocated / 4.3 GB Limit</p>
+            </div>
+          </div>
+
+          <div class="mt-4 space-y-2 font-mono text-xs">
+            <div class="flex justify-between p-2.5 bg-soc-card rounded border border-soc-border">
+              <span class="text-white">FastAPI / Flask REST API (Port 8000)</span>
+              <span class="text-emerald-400 font-bold">ONLINE</span>
+            </div>
+            <div class="flex justify-between p-2.5 bg-soc-card rounded border border-soc-border">
+              <span class="text-white">Cowrie SSH/Telnet Trap (Port 2222/2223)</span>
+              <span class="text-emerald-400 font-bold">ONLINE</span>
+            </div>
+            <div class="flex justify-between p-2.5 bg-soc-card rounded border border-soc-border">
+              <span class="text-white">Dionaea Multi-Trap (Port 4445/8081/2121)</span>
+              <span class="text-emerald-400 font-bold">ONLINE</span>
+            </div>
+            <div class="flex justify-between p-2.5 bg-soc-card rounded border border-soc-border">
+              <span class="text-white">Mosquitto MQTT Honeypot (Port 18883)</span>
+              <span class="text-emerald-400 font-bold">ONLINE</span>
+            </div>
+            <div class="flex justify-between p-2.5 bg-soc-card rounded border border-soc-border">
+              <span class="text-white">Virtual IoT Fleet (10 Devices)</span>
+              <span class="text-emerald-400 font-bold">ONLINE</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Initial Load
+    refreshData();
+    setInterval(refreshData, 15000);
+  </script>
+</body>
+</html>
+

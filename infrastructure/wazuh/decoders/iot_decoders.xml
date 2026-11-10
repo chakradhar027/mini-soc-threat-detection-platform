@@ -1,0 +1,27 @@
+<!--
+  Wazuh Custom Decoders for IoT Fleet Telemetry
+  Decodes periodic sensor data and controlled anomaly events
+-->
+
+<decoder name="iot-simulator-json">
+  <prematch>"device_id":"iot-|"device_id": "iot-</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>
+
+<decoder name="iot-simulator-fields">
+  <parent>iot-simulator-json</parent>
+  <regex offset="after_parent">"device_id":\s*"([^"]+)"|"device_id": "([^"]+)"</regex>
+  <order>dstuser</order>
+</decoder>
+
+<decoder name="iot-simulator-fields">
+  <parent>iot-simulator-json</parent>
+  <regex offset="after_parent">"simulated_ip":\s*"(\d+.\d+.\d+.\d+)"|"simulated_ip": "(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="iot-simulator-fields">
+  <parent>iot-simulator-json</parent>
+  <regex offset="after_parent">"anomaly_type":\s*"([^"]+)"|"anomaly_type": "([^"]+)"</regex>
+  <order>extra_data</order>
+</decoder>

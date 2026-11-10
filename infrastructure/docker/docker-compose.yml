@@ -1,0 +1,15 @@
+# =========================================================================
+# MINI SOC & THREAT DETECTION PLATFORM - MASTER DOCKER COMPOSE
+# =========================================================================
+# Modular composition supporting staged startup and memory optimization.
+# Includes:
+#   1. compose.honeypots.yml  (Cowrie, Dionaea, Mosquitto Honeypot)
+#   2. compose.wazuh.yml      (Wazuh Indexer, Wazuh Manager, Wazuh Dashboard)
+#   3. compose.application.yml(PostgreSQL, FastAPI Backend, React UI, Grafana)
+# =========================================================================
+
+include:
+  - compose.honeypots.yml
+  - compose.wazuh.yml
+  - compose.application.yml
+

@@ -174,3 +174,4 @@ Given the development machine has **8 GB unified memory**, the resource allocati
 | **Total Allocation** | **All Services** | **~2.7 GB** | **~4.3 GB** | **< 6.0 cores** |
 
 *Host buffer remaining*: ~3.7 GB RAM reserved for macOS, Docker Desktop VM overhead, and IDE processes.
+

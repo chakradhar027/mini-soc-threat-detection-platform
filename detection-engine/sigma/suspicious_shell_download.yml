@@ -1,0 +1,35 @@
+title: Suspicious File Dropper Download via Honeypot Shell
+id: sig-mini-soc-002
+status: production
+description: Detects command line invocations or honeypot download events fetching remote binary artifacts via curl, wget, or python inside the honeypot shell.
+author: Mini SOC Detection Engineering Team
+date: 2026-11-08
+references:
+  - https://attack.mitre.org/techniques/T1105/
+tags:
+  - attack.command_and_control
+  - attack.t1105
+logsource:
+  category: honeypot
+  product: cowrie
+detection:
+  selection_event:
+    eventid: cowrie.session.file_download
+  selection_cmd:
+    eventid: cowrie.command.input
+    input|contains:
+      - 'wget '
+      - 'curl '
+      - 'chmod +x '
+      - 'chmod 777 '
+      - 'python -c '
+  condition: selection_event or selection_cmd
+fields:
+  - src_ip
+  - url
+  - shasum
+  - input
+falsepositives:
+  - None on isolated honeynet
+level: critical
+

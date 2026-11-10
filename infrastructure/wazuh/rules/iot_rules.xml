@@ -1,0 +1,44 @@
+<!--
+  Wazuh Custom Security Rules for IoT Fleet Anomalies
+-->
+
+<group name="iot,">
+
+  <rule id="100400" level="3">
+    <decoded_as>json</decoded_as>
+    <field name="device_id">^iot-</field>
+    <description>IoT Fleet: Device telemetry received.</description>
+    <mitre>
+      <id>T1082</id>
+    </mitre>
+  </rule>
+
+  <rule id="100401" level="11">
+    <if_sid>100400</if_sid>
+    <field name="anomaly_type">BURST_PUBLISH_FLOOD</field>
+    <description>IoT Security Alert: High-rate MQTT publish flood detected from compromised device.</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+  </rule>
+
+  <rule id="100402" level="12">
+    <if_sid>100400</if_sid>
+    <field name="anomaly_type">UNAUTHORIZED_TOPIC_COMMAND</field>
+    <description>IoT Security Alert: Rogue actuator override command sent to unauthorized topic.</description>
+    <mitre>
+      <id>T1499.004</id>
+    </mitre>
+  </rule>
+
+  <rule id="100403" level="9">
+    <if_sid>100400</if_sid>
+    <field name="anomaly_type">TELEMETRY_OUT_OF_BOUNDS</field>
+    <description>IoT Security Alert: Sensor measurement sharply out-of-bounds, possible sensor tampering.</description>
+    <mitre>
+      <id>T1565.001</id>
+    </mitre>
+  </rule>
+
+</group>
+

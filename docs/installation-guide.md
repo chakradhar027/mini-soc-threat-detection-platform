@@ -145,3 +145,4 @@ To confirm Phase 1 readiness:
    - Never use `--platform linux/amd64` unless strictly building an x86 binary.
 3. **Host Permission Errors on Log Mounts**:
    - Honeypot volume logs must be readable by Wazuh. We configure persistent directories under `infrastructure/docker/volumes/` with appropriate group read permissions (`chmod -R 755`).
+

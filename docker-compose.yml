@@ -1,0 +1,7 @@
+# Root Docker Compose Wrapper
+# Delegates to modular configurations in infrastructure/docker/
+include:
+  - infrastructure/docker/compose.honeypots.yml
+  - infrastructure/docker/compose.wazuh.yml
+  - infrastructure/docker/compose.application.yml
+

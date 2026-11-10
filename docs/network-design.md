@@ -90,3 +90,4 @@ All administrative and data services are bound exclusively to the local loopback
     }
     ```
   - Blocking commands targeting localhost or LAN gateways are automatically rejected by the response engine and logged as safety violations.
+

@@ -70,3 +70,4 @@ Running a complete SOC stack on an 8 GB workstation requires precise memory tuni
    - Docker JSON log driver restricted to `max-size: "10m"`, `max-file: "3"` to prevent storage ballooning.
 4. **Decoupled Development**:
    - Frontend and Backend can run natively on macOS using the virtual environment and Node.js or within Docker, conserving container VM overhead.
+

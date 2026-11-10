@@ -1,0 +1,197 @@
+{
+  "simulation": {
+    "enabled": true,
+    "broker_host": "127.0.0.1",
+    "broker_port": 1883,
+    "log_output_dir": "infrastructure/docker/volumes/mosquitto/log",
+    "telemetry_log_file": "infrastructure/docker/volumes/mosquitto/log/iot_telemetry.json",
+    "tick_interval_seconds": 2.0
+  },
+  "devices": [
+    {
+      "device_id": "iot-cam-01",
+      "device_name": "Lobby Panoramic IP Camera",
+      "device_type": "IP Camera",
+      "simulated_ip": "192.168.1.101",
+      "mac_address": "00:1A:2B:3C:4D:5E",
+      "mqtt_topic": "iot/camera/lobby/telemetry",
+      "firmware_version": "v3.4.1",
+      "normal_interval_sec": 5,
+      "metrics": {
+        "fps": 30,
+        "bitrate_kbps": 2048,
+        "motion_detected": false
+      }
+    },
+    {
+      "device_id": "iot-router-01",
+      "device_name": "Core Edge Smart Router",
+      "device_type": "Smart Router",
+      "simulated_ip": "192.168.1.1",
+      "mac_address": "00:1A:2B:3C:4D:01",
+      "mqtt_topic": "iot/router/edge/health",
+      "firmware_version": "v5.1.0-openwrt",
+      "normal_interval_sec": 10,
+      "metrics": {
+        "active_clients": 14,
+        "cpu_usage_pct": 18.5,
+        "mem_usage_pct": 34.2,
+        "wan_status": "connected"
+      }
+    },
+    {
+      "device_id": "iot-temp-01",
+      "device_name": "Server Room Temperature Sensor",
+      "device_type": "Temperature Sensor",
+      "simulated_ip": "192.168.1.103",
+      "mac_address": "00:1A:2B:3C:4D:6F",
+      "mqtt_topic": "iot/sensor/server_room/temperature",
+      "firmware_version": "v1.2.0",
+      "normal_interval_sec": 3,
+      "metrics": {
+        "temperature_celsius": 21.5,
+        "humidity_pct": 45.0,
+        "threshold_max_c": 28.0
+      }
+    },
+    {
+      "device_id": "iot-motion-01",
+      "device_name": "Vault Corridor Motion Sensor",
+      "device_type": "Motion Sensor",
+      "simulated_ip": "192.168.1.104",
+      "mac_address": "00:1A:2B:3C:4D:7A",
+      "mqtt_topic": "iot/sensor/vault/motion",
+      "firmware_version": "v2.0.1",
+      "normal_interval_sec": 4,
+      "metrics": {
+        "motion_detected": false,
+        "light_lux": 150
+      }
+    },
+    {
+      "device_id": "iot-light-01",
+      "device_name": "Smart Lighting Gateway Controller",
+      "device_type": "Smart Lighting Controller",
+      "simulated_ip": "192.168.1.105",
+      "mac_address": "00:1A:2B:3C:4D:8B",
+      "mqtt_topic": "iot/actuator/lighting/status",
+      "firmware_version": "v2.3.0",
+      "normal_interval_sec": 8,
+      "metrics": {
+        "power_state": "ON",
+        "brightness_pct": 75,
+        "color_temp_k": 4000
+      }
+    },
+    {
+      "device_id": "iot-gw-01",
+      "device_name": "Industrial Modbus/MQTT Gateway",
+      "device_type": "MQTT Gateway",
+      "simulated_ip": "192.168.1.10",
+      "mac_address": "00:1A:2B:3C:4D:10",
+      "mqtt_topic": "iot/gateway/industrial/status",
+      "firmware_version": "v4.0.2",
+      "normal_interval_sec": 6,
+      "metrics": {
+        "bridged_nodes": 8,
+        "packets_relayed": 1420,
+        "error_count": 0
+      }
+    },
+    {
+      "device_id": "iot-door-01",
+      "device_name": "Data Center Entry Door Sensor",
+      "device_type": "Door Sensor",
+      "simulated_ip": "192.168.1.107",
+      "mac_address": "00:1A:2B:3C:4D:9C",
+      "mqtt_topic": "iot/sensor/datacenter/door",
+      "firmware_version": "v1.1.4",
+      "normal_interval_sec": 5,
+      "metrics": {
+        "door_state": "CLOSED",
+        "badge_id_last": "BADGE-9941",
+        "tamper_detected": false
+      }
+    },
+    {
+      "device_id": "iot-env-01",
+      "device_name": "Clean Room Environmental Sensor",
+      "device_type": "Environmental Sensor",
+      "simulated_ip": "192.168.1.108",
+      "mac_address": "00:1A:2B:3C:4D:AD",
+      "mqtt_topic": "iot/sensor/cleanroom/environment",
+      "firmware_version": "v2.1.0",
+      "normal_interval_sec": 5,
+      "metrics": {
+        "air_quality_index": 22,
+        "co2_ppm": 420,
+        "particulate_pm25": 4.2
+      }
+    },
+    {
+      "device_id": "iot-energy-01",
+      "device_name": "Main UPS Smart Energy Meter",
+      "device_type": "Smart Energy Meter",
+      "simulated_ip": "192.168.1.109",
+      "mac_address": "00:1A:2B:3C:4D:BE",
+      "mqtt_topic": "iot/meter/ups/energy",
+      "firmware_version": "v3.0.0",
+      "normal_interval_sec": 4,
+      "metrics": {
+        "voltage_v": 230.2,
+        "current_a": 16.4,
+        "active_power_kw": 3.77,
+        "power_factor": 0.98
+      }
+    },
+    {
+      "device_id": "iot-ctrl-01",
+      "device_name": "HVAC Supervisory Controller",
+      "device_type": "Device Monitoring Controller",
+      "simulated_ip": "192.168.1.110",
+      "mac_address": "00:1A:2B:3C:4D:CF",
+      "mqtt_topic": "iot/controller/hvac/telemetry",
+      "firmware_version": "v4.5.1",
+      "normal_interval_sec": 7,
+      "metrics": {
+        "fan_speed_rpm": 1200,
+        "chiller_stage": 2,
+        "setpoint_celsius": 21.0,
+        "alarm_active": false
+      }
+    }
+  ],
+  "attack_scenarios": {
+    "burst_publish_flood": {
+      "target_device_id": "iot-cam-01",
+      "burst_count": 50,
+      "interval_ms": 20,
+      "description": "High-frequency MQTT publish burst simulating compromised camera botnet DDoS activity."
+    },
+    "authentication_spray": {
+      "target_broker": "mqtt_honeypot",
+      "simulated_attacker_ip": "198.51.100.77",
+      "usernames": ["admin", "root", "operator", "service", "technician"],
+      "passwords": ["123456", "admin", "password", "root", "mqttpass"],
+      "description": "Brute-force credential spray against the MQTT IoT management endpoint."
+    },
+    "unauthorized_topic_access": {
+      "target_device_id": "iot-ctrl-01",
+      "malicious_topic": "iot/controller/hvac/admin/override",
+      "payload": "{\"cmd\": \"DISABLE_SAFETY_SHUTDOWN\", \"force\": true}",
+      "description": "Unauthorized publish to critical supervisory control topic."
+    },
+    "wildcard_subscription": {
+      "simulated_attacker_ip": "203.0.113.44",
+      "client_id": "recon_listener_daemon",
+      "topics": ["#"],
+      "description": "Eavesdropping attacker subscribing to root wildcard topic to harvest all IoT sensor streams."
+    },
+    "telemetry_tampering": {
+      "target_device_id": "iot-temp-01",
+      "spoofed_temperature": 99.9,
+      "description": "Sensor spoofing injecting false extreme telemetry into server room monitoring."
+    }
+  }
+}
+

@@ -34,3 +34,4 @@ infrastructure/docker/volumes/
 ```
 
 *Note: All honeypot log volumes are mounted as read-only (`:ro`) into the log ingestion service to prevent tampering.*
+

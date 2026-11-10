@@ -90,3 +90,14 @@ logs/
 *.sublime-project
 *.sublime-workspace
 .antigravity/
+
+
+# Local runtime process files
+.pids/
+
+# Generated security reports and evidence
+reports/*
+!reports/generate_evidence_manifest.py
+
+# Local agent runtime state
+.agents/

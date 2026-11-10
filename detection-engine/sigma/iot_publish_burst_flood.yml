@@ -1,0 +1,26 @@
+title: IoT High-Rate Publish Flood (DDoS Botnet Signature)
+id: sig-mini-soc-004
+status: production
+description: Detects abnormal publish rate exceeding safe operational thresholds from an IoT edge device, characteristic of a Mirai-style botnet recruitment or DDoS staging.
+author: Mini SOC Detection Engineering Team
+date: 2026-11-08
+references:
+  - https://attack.mitre.org/techniques/T1499/
+tags:
+  - attack.impact
+  - attack.t1499
+logsource:
+  category: iot
+  product: simulator
+detection:
+  selection:
+    anomaly_type: BURST_PUBLISH_FLOOD
+  condition: selection
+fields:
+  - device_id
+  - simulated_ip
+  - anomaly_type
+falsepositives:
+  - Device diagnostic dump mode
+level: high
+
